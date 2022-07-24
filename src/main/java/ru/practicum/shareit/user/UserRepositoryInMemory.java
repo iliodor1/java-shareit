@@ -2,9 +2,9 @@ package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import ru.practicum.shareit.exeption.ObjectNotFoundException;
+import ru.practicum.shareit.exeption.ConflictRequestException;
+import ru.practicum.shareit.exeption.NotFoundException;
 
-import javax.validation.ValidationException;
 import java.util.*;
 
 @Repository
@@ -16,7 +16,7 @@ public class UserRepositoryInMemory implements UserRepository {
     @Override
     public User addUser(User user) {
         if (isValid(user) && !users.isEmpty()) {
-            throw new ValidationException("User already exists with email: " + user.getEmail());
+            throw new ConflictRequestException("User already exists with email: " + user.getEmail());
         }
 
         generateId();
@@ -34,12 +34,12 @@ public class UserRepositoryInMemory implements UserRepository {
     @Override
     public User updateUser(User user) {
         if (isValid(user) && !users.isEmpty()) {
-            throw new ValidationException(user.getEmail() + ": this emile already exist!");
+            throw new ConflictRequestException("User already exists with email: " + user.getEmail());
         }
         Long id = user.getId();
 
         if (!users.containsKey(id)) {
-            throw new ObjectNotFoundException("User not exist with id: " + id);
+            throw new NotFoundException("User not exist with id: " + id);
         }
 
         User earlyUser = users.get(id);
