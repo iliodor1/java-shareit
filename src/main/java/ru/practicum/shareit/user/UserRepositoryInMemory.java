@@ -1,22 +1,28 @@
 package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exeption.ConflictRequestException;
 import ru.practicum.shareit.exeption.NotFoundException;
+import ru.practicum.shareit.user.mopel.User;
 
 import java.util.*;
 
 @Repository
 @RequiredArgsConstructor
+@Slf4j
 public class UserRepositoryInMemory implements UserRepository {
     private long id;
     private final Map<Long, User> users = new HashMap<>();
 
     @Override
     public User addUser(User user) {
-        if (isValid(user) && !users.isEmpty()) {
-            throw new ConflictRequestException("User already exists with email: " + user.getEmail());
+        if (isUniqueEmail(user)) {
+            log.error("User with email " + user.getEmail() + " already exists!");
+            throw new ConflictRequestException(
+                    "User with email " + user.getEmail() + " already exists!"
+            );
         }
 
         generateId();
@@ -33,33 +39,37 @@ public class UserRepositoryInMemory implements UserRepository {
 
     @Override
     public User updateUser(User user) {
-        if (isValid(user) && !users.isEmpty()) {
-            throw new ConflictRequestException("User already exists with email: " + user.getEmail());
-        }
         Long id = user.getId();
 
         if (!users.containsKey(id)) {
-            throw new NotFoundException("User not exist with id: " + id);
+            log.error("User with id " + id + " not found!");
+            throw new NotFoundException("User with id " + id + " not found!");
+        }
+        if (isUniqueEmail(user)) {
+            log.error("User with email " + user.getEmail() + " already exists!");
+            throw new ConflictRequestException(
+                    "User with email " + user.getEmail() + " already exists!"
+            );
         }
 
-        User earlyUser = users.get(id);
+        User currentUser = users.get(id);
 
-        if (user.getEmail() != null) {
-            earlyUser.setEmail(user.getEmail());
-        }
+        if (user.getEmail() != null) currentUser.setEmail(user.getEmail());
+        if (user.getName() != null) currentUser.setName(user.getName());
 
-        if (user.getName() != null) {
-            earlyUser.setName(user.getName());
-        }
+        users.put(id, currentUser);
 
-        users.put(id, earlyUser);
-
-        return earlyUser;
+        return currentUser;
     }
 
     @Override
     public void deleteUser(Long id) {
-        users.remove(id);
+        if(users.containsKey(id)) {
+            users.remove(id);
+        } else {
+            log.error("User with id " + id + " not found!");
+            throw new NotFoundException("User with id " + id + " not found!");
+        }
     }
 
     @Override
@@ -71,7 +81,7 @@ public class UserRepositoryInMemory implements UserRepository {
         ++id;
     }
 
-    public boolean isValid(User user) {
+    private boolean isUniqueEmail(User user) {
         return users.values().stream()
                 .anyMatch(u -> u.getEmail().equals(user.getEmail()));
     }
