@@ -40,7 +40,7 @@ public class ItemController {
 
     @GetMapping("search")
     public List<ItemDto> searchItem(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                    @Valid @NotBlank @RequestParam String text){
+                                    @Valid @NotBlank @RequestParam String text) {
         return itemService.searchItem(userId, text);
     }
 

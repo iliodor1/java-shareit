@@ -62,14 +62,14 @@ public class ItemRepositoryInMemory implements ItemRepository {
                     "Item with id %s has not been added user id %s", item.getId(), item.getUserId()
             ));
         }
-        if(item.getAvailable() != null
-                & item.getAvailable() != existingItem.getAvailable()){
+        if (item.getAvailable() != null
+                & item.getAvailable() != existingItem.getAvailable()) {
             existingItem.setAvailable(item.getAvailable());
         }
-        if (item.getName() != null){
+        if (item.getName() != null) {
             existingItem.setName(item.getName());
         }
-        if(item.getDescription() != null){
+        if (item.getDescription() != null) {
             existingItem.setDescription(item.getDescription());
         }
 

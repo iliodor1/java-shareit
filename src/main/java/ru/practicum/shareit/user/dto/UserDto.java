@@ -7,8 +7,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
 @Data
-@FieldDefaults(makeFinal = true , level = AccessLevel.PRIVATE)
-@AllArgsConstructor
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class UserDto {
     Long id;
     @NotBlank

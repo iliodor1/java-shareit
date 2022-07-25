@@ -64,7 +64,7 @@ public class UserRepositoryInMemory implements UserRepository {
 
     @Override
     public void deleteUser(Long id) {
-        if(users.containsKey(id)) {
+        if (users.containsKey(id)) {
             users.remove(id);
         } else {
             log.error("User with id " + id + " not found!");
