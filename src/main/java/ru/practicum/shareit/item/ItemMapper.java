@@ -11,17 +11,18 @@ public class ItemMapper {
         Long id = item.getId();
         String name = item.getName();
         String description = item.getDescription();
-        boolean available = item.getAvailable();
+        Boolean available = item.getAvailable();
 
         return new ItemDto(id, name, description, available);
     }
 
     public Item toItem(ItemDto itemDto, Long userId) {
-        return new Item(itemDto.getId(),
-                itemDto.getName(),
-                itemDto.getDescription(),
-                itemDto.getAvailable(),
-                userId);
+        Long id = itemDto.getId();
+        String name = itemDto.getName();
+        String description = itemDto.getDescription();
+        Boolean available = itemDto.getAvailable();
+
+        return new Item(id, name, description, available, userId);
     }
 
 }

@@ -20,13 +20,7 @@ public class UserMapper {
         String name = userDto.getName();
         String email = userDto.getEmail();
 
-        User user = new User();
-
-        user.setId(id);
-        user.setName(name);
-        user.setEmail(email);
-
-        return user;
+        return new User(id, name, email);
     }
 
 }
