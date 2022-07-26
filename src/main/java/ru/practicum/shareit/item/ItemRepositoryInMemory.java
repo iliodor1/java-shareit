@@ -63,7 +63,7 @@ public class ItemRepositoryInMemory implements ItemRepository {
             ));
         }
         if (item.getAvailable() != null
-                & item.getAvailable() != existingItem.getAvailable()) {
+                && item.getAvailable() != existingItem.getAvailable()) {
             existingItem.setAvailable(item.getAvailable());
         }
         if (item.getName() != null) {
