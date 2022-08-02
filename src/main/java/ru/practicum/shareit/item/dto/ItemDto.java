@@ -4,6 +4,9 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
+import ru.practicum.shareit.request.ItemRequest;
+import ru.practicum.shareit.validator.Marker.*;
+import ru.practicum.shareit.validator.NullOrNotBlank;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -13,11 +16,14 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class ItemDto {
     Long id;
-    @NotBlank
+    @NotBlank(groups = OnCreate.class, message = "The name should not be null or blank.")
+    @NullOrNotBlank(groups = OnUpdate.class, message = "The name should be null or not blank.")
     String name;
-    @NotBlank
+    @NotBlank(groups = OnCreate.class, message = "Description should not be null or blank.")
+    @NullOrNotBlank(groups = OnUpdate.class, message = "Description should be null or not blank.")
     String description;
-    @NotNull
+    @NotNull(groups = OnCreate.class, message = "The available should be not null.")
     Boolean available;
+    ItemRequest itemRequest;
 
 }
