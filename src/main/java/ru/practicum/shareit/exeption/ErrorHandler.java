@@ -10,42 +10,44 @@ import javax.validation.ValidationException;
 
 @RestControllerAdvice("ru.practicum.shareit")
 public class ErrorHandler {
+    public static final String ERROR = "error";
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleBadRequestException(BadRequestException e) {
-        return new ErrorResponse("error", e.getMessage());
+        return new ErrorResponse(ERROR, e.getMessage());
     }
 
     @ExceptionHandler(ValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationException(ValidationException e) {
-        return new ErrorResponse("error", e.getMessage());
+        return new ErrorResponse(ERROR, e.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        return new ErrorResponse("error", e.getMessage());
+        return new ErrorResponse(ERROR, e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleConflictRequestException(ConflictRequestException e) {
-        return new ErrorResponse("error", e.getMessage());
+        return new ErrorResponse(ERROR, e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleFilmNotFoundException(NotFoundException e) {
-        return new ErrorResponse("error", e.getMessage());
+        return new ErrorResponse(ERROR, e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleThrowable(final Throwable e) {
-        return new ErrorResponse("error",
+        return new ErrorResponse(ERROR,
                 e.getMessage()
         );
     }
+
 }
