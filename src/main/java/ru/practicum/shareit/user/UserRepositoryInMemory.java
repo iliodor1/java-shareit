@@ -17,7 +17,7 @@ public class UserRepositoryInMemory implements UserRepository {
     private final Map<Long, User> users = new HashMap<>();
 
     @Override
-    public User addUser(User user) {
+    public User create(User user) {
         if (isUniqueEmail(user)) {
             log.error("User with email " + user.getEmail() + " already exists!");
             throw new ConflictRequestException(
@@ -38,13 +38,14 @@ public class UserRepositoryInMemory implements UserRepository {
     }
 
     @Override
-    public User updateUser(User user) {
+    public User update(User user) {
         Long id = user.getId();
+        users.computeIfAbsent(id, v -> {
+                    log.error("User with id " + id + " not found!");
+                    throw new NotFoundException("User with id " + id + " not found!");
+                }
+        );
 
-        if (!users.containsKey(id)) {
-            log.error("User with id " + id + " not found!");
-            throw new NotFoundException("User with id " + id + " not found!");
-        }
         if (isUniqueEmail(user)) {
             log.error("User with email " + user.getEmail() + " already exists!");
             throw new ConflictRequestException(
@@ -54,8 +55,12 @@ public class UserRepositoryInMemory implements UserRepository {
 
         User currentUser = users.get(id);
 
-        if (user.getEmail() != null) currentUser.setEmail(user.getEmail());
-        if (user.getName() != null) currentUser.setName(user.getName());
+        if (user.getEmail() != null) {
+            currentUser.setEmail(user.getEmail());
+        }
+        if (user.getName() != null) {
+            currentUser.setName(user.getName());
+        }
 
         users.put(id, currentUser);
 
@@ -63,7 +68,7 @@ public class UserRepositoryInMemory implements UserRepository {
     }
 
     @Override
-    public void deleteUser(Long id) {
+    public void delete(Long id) {
         if (users.containsKey(id)) {
             users.remove(id);
         } else {
@@ -82,8 +87,9 @@ public class UserRepositoryInMemory implements UserRepository {
     }
 
     private boolean isUniqueEmail(User user) {
-        return users.values().stream()
-                .anyMatch(u -> u.getEmail().equals(user.getEmail()));
+        return users.values()
+                    .stream()
+                    .anyMatch(u -> u.getEmail().equals(user.getEmail()));
     }
 
 }

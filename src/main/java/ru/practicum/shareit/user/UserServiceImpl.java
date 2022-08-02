@@ -19,33 +19,33 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
 
     @Override
-    public UserDto addUser(UserDto userDto) {
+    public UserDto create(UserDto userDto) {
         User user = userMapper.toUser(userDto);
 
-        return userMapper.toDto(userRepository.addUser(user));
+        return userMapper.toDto(userRepository.create(user));
     }
 
     @Override
-    public UserDto updateUser(Long id, UserDto userDto) {
+    public UserDto update(Long id, UserDto userDto) {
         User user = userMapper.toUser(userDto);
         user.setId(id);
 
-        return userMapper.toDto(userRepository.updateUser(user));
+        return userMapper.toDto(userRepository.update(user));
     }
 
     @Override
     public UserDto getUser(Long id) {
         User user = userRepository.getUser(id)
-                .orElseThrow(() -> {
-                    log.error("User with id " + id + " not found!");
-                    return new NotFoundException("User with id " + id + " not found!");
-                });
+                                  .orElseThrow(() -> {
+                                      log.error("User with id " + id + " not found!");
+                                      return new NotFoundException("User with id " + id + " not found!");
+                                  });
         return userMapper.toDto(user);
     }
 
     @Override
-    public void deleteUser(Long id) {
-        userRepository.deleteUser(id);
+    public void delete(Long id) {
+        userRepository.delete(id);
     }
 
     @Override
@@ -53,8 +53,8 @@ public class UserServiceImpl implements UserService {
         List<User> users = userRepository.getAll();
 
         return users.stream()
-                .map(userMapper::toDto)
-                .collect(Collectors.toList());
+                    .map(userMapper::toDto)
+                    .collect(Collectors.toList());
     }
 
 }
