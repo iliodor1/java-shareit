@@ -9,12 +9,12 @@ public interface ItemRepository {
 
     Optional<Item> getItem(Long id);
 
-    Item addItem(Long ownerId, Item item);
+    Item create(Long ownerId, Item item);
 
     Item update(Long itemId, Item item);
 
-    List<Item> getOwnItems(Long userId);
+    List<Item> getOwnItems(Long ownerId);
 
-    List<Item> searchItem(Long userId, String text);
+    List<Item> searchItem(String text);
 
 }

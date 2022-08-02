@@ -17,51 +17,52 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final ItemMapper itemMapper;
 
-
     @Override
-    public ItemDto getItem(Long userId, Long id) {
+    public ItemDto getItem(Long id) {
         Item item = itemRepository.getItem(id)
-                .orElseThrow(() -> {
-                    log.error("Item with id {} not found", id);
-                    return new NotFoundException("Item not found with id: " + id);
-                });
+                                  .orElseThrow(() -> {
+                                      log.error("Item with id {} not found", id);
+                                      return new NotFoundException("Item not found with id: " + id);
+                                  });
 
         return itemMapper.toDto(item);
     }
 
     @Override
-    public List<ItemDto> getOwnItems(Long userId) {
-        List<Item> items = itemRepository.getOwnItems(userId);
+    public List<ItemDto> getOwnItems(Long ownerId) {
+        List<Item> items = itemRepository.getOwnItems(ownerId);
 
         return items.stream()
-                .map(itemMapper::toDto)
-                .collect(Collectors.toList());
+                    .map(itemMapper::toDto)
+                    .collect(Collectors.toList());
     }
 
     @Override
-    public ItemDto addItem(Long userId, ItemDto itemDto) {
-        Item item = itemMapper.toItem(itemDto, userId);
+    public ItemDto create(Long ownerId, ItemDto itemDto) {
+        Item item = itemMapper.toItem(itemDto, ownerId);
 
-        return itemMapper.toDto(itemRepository.addItem(userId, item));
+        return itemMapper.toDto(itemRepository.create(ownerId, item));
     }
 
     @Override
-    public ItemDto update(Long userId, Long itemId, ItemDto itemDto) {
-        Item item = itemMapper.toItem(itemDto, userId);
+    public ItemDto update(Long ownerId, Long itemId, ItemDto itemDto) {
+        Item item = itemMapper.toItem(itemDto, ownerId);
         item.setId(itemId);
 
         return itemMapper.toDto(itemRepository.update(itemId, item));
     }
 
     @Override
-    public List<ItemDto> searchItem(Long userId, String text) {
-        if (text.isBlank()) return List.of();
+    public List<ItemDto> searchItem(String text) {
+        if (text.isBlank()){
+            return List.of();
+        }
 
-        List<Item> items = itemRepository.searchItem(userId, text);
+        List<Item> items = itemRepository.searchItem(text);
 
         return items.stream()
-                .map(itemMapper::toDto)
-                .collect(Collectors.toList());
+                    .map(itemMapper::toDto)
+                    .collect(Collectors.toList());
     }
 
 }

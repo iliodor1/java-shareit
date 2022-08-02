@@ -6,14 +6,14 @@ import java.util.List;
 
 public interface ItemService {
 
-    ItemDto getItem(Long userId, Long id);
+    ItemDto getItem(Long id);
 
-    List<ItemDto> getOwnItems(Long userId);
+    List<ItemDto> getOwnItems(Long ownerId);
 
-    ItemDto addItem(Long userId, ItemDto itemDto);
+    ItemDto create(Long ownerId, ItemDto itemDto);
 
-    ItemDto update(Long userId, Long itemId, ItemDto itemDto);
+    ItemDto update(Long ownerId, Long itemId, ItemDto itemDto);
 
-    List<ItemDto> searchItem(Long userId, String text);
+    List<ItemDto> searchItem(String text);
 
 }

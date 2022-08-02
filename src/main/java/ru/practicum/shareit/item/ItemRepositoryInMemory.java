@@ -30,10 +30,10 @@ public class ItemRepositoryInMemory implements ItemRepository {
     }
 
     @Override
-    public Item addItem(Long userId, Item item) {
-        if (!isContainsUser(userId)) {
-            log.error("User with id: {} not exist!", userId);
-            throw new NotFoundException("User with id: " + userId + " not exist!");
+    public Item create(Long ownerId, Item item) {
+        if (!isContainsUser(ownerId)) {
+            log.error("User with id: {} not exist!", ownerId);
+            throw new NotFoundException("User with id: " + ownerId + " not exist!");
         }
         if (!item.getAvailable()) {
             log.error("Item {} has the availability status false", item.getName());
@@ -55,11 +55,12 @@ public class ItemRepositoryInMemory implements ItemRepository {
 
         Item existingItem = items.get(itemId);
 
-        if (!existingItem.getUserId().equals(item.getUserId())) {
+        if (!existingItem.getOwnerId()
+                         .equals(item.getOwnerId())) {
             log.error("User with id {} is trying to update not own item with id {}",
-                    item.getUserId(), itemId);
+                    item.getOwnerId(), itemId);
             throw new NotFoundException(String.format(
-                    "Item with id %s has not been added user id %s", item.getId(), item.getUserId()
+                    "Item with id %s has not been added user id %s", item.getId(), item.getOwnerId()
             ));
         }
         if (item.getAvailable() != null
@@ -80,18 +81,20 @@ public class ItemRepositoryInMemory implements ItemRepository {
 
     @Override
     public List<Item> getOwnItems(Long userId) {
-        return items.values().stream()
-                .filter(i -> i.getUserId().equals(userId))
-                .collect(Collectors.toList());
+        return items.values()
+                    .stream()
+                    .filter(i -> i.getOwnerId().equals(userId))
+                    .collect(Collectors.toList());
     }
 
     @Override
-    public List<Item> searchItem(Long userId, String text) {
-        return items.values().stream()
-                .filter(i -> i.getAvailable().equals(true)
-                        && (i.getName().toLowerCase().contains(text.toLowerCase())
-                        || i.getDescription().toLowerCase().contains(text.toLowerCase())))
-                .collect(Collectors.toList());
+    public List<Item> searchItem(String text) {
+        return items.values()
+                    .stream()
+                    .filter(i -> i.getAvailable().equals(true)
+                            && (i.getName().toLowerCase().contains(text.toLowerCase())
+                            || i.getDescription().toLowerCase().contains(text.toLowerCase())))
+                    .collect(Collectors.toList());
     }
 
     private void generateId() {
@@ -99,8 +102,9 @@ public class ItemRepositoryInMemory implements ItemRepository {
     }
 
     private boolean isContainsUser(Long userId) {
-        return userRepository.getAll().stream()
-                .anyMatch(u -> u.getId().equals(userId));
+        return userRepository.getAll()
+                             .stream()
+                             .anyMatch(u -> u.getId().equals(userId));
     }
 
 }
