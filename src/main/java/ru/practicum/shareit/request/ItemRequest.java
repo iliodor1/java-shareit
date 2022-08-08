@@ -1,4 +1,4 @@
-package ru.practicum.shareit.booking;
+package ru.practicum.shareit.request;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -8,14 +8,10 @@ import java.time.LocalDateTime;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Booking {
+public class ItemRequest {
     Long id;
-    LocalDateTime start;
-    LocalDateTime end;
-    Long itemId;
-    Long bookerId;
-    Status status;
+    String description;
+    Long requestorId;
+    LocalDateTime created;
 
 }
-
-
