@@ -18,7 +18,7 @@ public class UserRepositoryInMemory implements UserRepository {
 
     @Override
     public User create(User user) {
-        if (isUniqueEmail(user)) {
+        if (isNotUniqueEmail(user)) {
             log.error("User with email " + user.getEmail() + " already exists!");
             throw new ConflictRequestException(
                     "User with email " + user.getEmail() + " already exists!"
@@ -46,7 +46,7 @@ public class UserRepositoryInMemory implements UserRepository {
                 }
         );
 
-        if (isUniqueEmail(user)) {
+        if (isNotUniqueEmail(user)) {
             log.error("User with email " + user.getEmail() + " already exists!");
             throw new ConflictRequestException(
                     "User with email " + user.getEmail() + " already exists!"
@@ -86,7 +86,7 @@ public class UserRepositoryInMemory implements UserRepository {
         ++id;
     }
 
-    private boolean isUniqueEmail(User user) {
+    private boolean isNotUniqueEmail(User user) {
         return users.values()
                     .stream()
                     .anyMatch(u -> u.getEmail().equals(user.getEmail()));
