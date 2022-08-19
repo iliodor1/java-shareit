@@ -1,9 +1,12 @@
 spring:
   datasource:
-    driver-class-name: org.postgresql.Driver
+    driver-class-name: org.h2.Driver
     username: eldar
     url: jdbc:postgresql://localhost:5432/postgres
     password: '702658'
+  H2:
+    console:
+      enabled: true
   jpa:
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQL10Dialect
@@ -11,4 +14,15 @@ spring:
       hibernate:
         hbm2ddl:
           auto: create-drop
-
+  config:
+    activate:
+      on-profile: 'ci,test'
+logging:
+  level:
+    org:
+      springframework:
+        orm:
+          jpa:
+            JpaTransactionManager: DEBUG
+        transaction:
+          interceptor: TRACE
