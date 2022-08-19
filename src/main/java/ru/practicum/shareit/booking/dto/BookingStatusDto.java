@@ -8,7 +8,6 @@ import ru.practicum.shareit.item.dto.ItemInputDto;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import javax.validation.constraints.Future;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
