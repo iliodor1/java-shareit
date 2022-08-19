@@ -10,12 +10,12 @@ import javax.validation.ValidationException;
 
 @RestControllerAdvice("ru.practicum.shareit")
 public class ErrorHandler {
-    public static final String ERROR = "error";
+    private static final String ERROR = "Unknown state";
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleBadRequestException(BadRequestException e) {
-        return new ErrorResponse(ERROR, e.getMessage());
+        return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler(ValidationException.class)
