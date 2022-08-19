@@ -140,9 +140,10 @@ public class ItemServiceImpl implements ItemService {
                     lastBooking.getBooker().getId());
             itemOutputDto.setLastBooking(lastBookingItemOutputDto);
         }
-        if(nextBooking != null){
+        if (nextBooking != null) {
             nextBookingItemOutputDto = new BookingItemOutputDto(nextBooking.getId(),
-                    nextBooking.getBooker().getId());
+                    nextBooking.getBooker()
+                               .getId());
             itemOutputDto.setNextBooking(nextBookingItemOutputDto);
         }
 
