@@ -2,7 +2,7 @@ spring:
   datasource:
     driver-class-name: org.h2.Driver
     username: eldar
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:h2:mem:shareit
     password: '702658'
   H2:
     console:
@@ -10,10 +10,6 @@ spring:
   jpa:
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQL10Dialect
-    properties:
-      hibernate:
-        hbm2ddl:
-          auto: create-drop
   config:
     activate:
       on-profile: 'ci,test'
