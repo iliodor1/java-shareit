@@ -31,7 +31,7 @@ public class ItemRepositoryInMemory implements ItemRepository {
 
     @Override
     public Item create(Long ownerId, Item item) {
-        if (!isContainsUser(ownerId)) {
+        if (userNotExist(ownerId)) {
             log.error("User with id: {} not exist!", ownerId);
             throw new NotFoundException("User with id: " + ownerId + " not exist!");
         }
@@ -55,12 +55,13 @@ public class ItemRepositoryInMemory implements ItemRepository {
 
         Item existingItem = items.get(itemId);
 
-        if (!existingItem.getOwnerId()
-                         .equals(item.getOwnerId())) {
+        if (!existingItem.getOwner().getId()
+                         .equals(item.getOwner().getId())) {
             log.error("User with id {} is trying to update not own item with id {}",
-                    item.getOwnerId(), itemId);
+                    item.getOwner().getId(), itemId);
             throw new NotFoundException(String.format(
-                    "Item with id %s has not been added user id %s", item.getId(), item.getOwnerId()
+                    "Item with id %s has not been added user id %s",
+                    item.getId(), item.getOwner().getId()
             ));
         }
         if (item.getAvailable() != null
@@ -83,7 +84,7 @@ public class ItemRepositoryInMemory implements ItemRepository {
     public List<Item> getOwnItems(Long userId) {
         return items.values()
                     .stream()
-                    .filter(i -> i.getOwnerId().equals(userId))
+                    .filter(i -> i.getOwner().getId().equals(userId))
                     .collect(Collectors.toList());
     }
 
@@ -101,10 +102,10 @@ public class ItemRepositoryInMemory implements ItemRepository {
         ++id;
     }
 
-    private boolean isContainsUser(Long userId) {
+    private boolean userNotExist(Long userId) {
         return userRepository.getAll()
                              .stream()
-                             .anyMatch(u -> u.getId().equals(userId));
+                             .noneMatch(u -> u.getId().equals(userId));
     }
 
 }
