@@ -1,29 +1,14 @@
 spring:
-  jpa:
-    hibernate:
-      ddl-auto: none
-      dialect: org.hibernate.dialect.PostgreSQLDialect
-      show_sql: true
-  sql:
-    init:
-      mode: always
-  config:
-    activate:
-      on-profile: 'ci,test'
   datasource:
-    driverClassName: org.h2.Driver
-    url: 'jdbc:h2:mem:shareit'
-    username: test
-    password: test
-  h2:
-    console:
-      enabled: true
-logging:
-  level:
-    org:
-      springframework:
-        orm:
-          jpa:
-            JpaTransactionManager: DEBUG
-        transaction:
-          interceptor: TRACE
+    driver-class-name: org.postgresql.Driver
+    username: eldar
+    url: jdbc:postgresql://localhost:5432/postgres
+    password: '702658'
+  jpa:
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQL10Dialect
+    properties:
+      hibernate:
+        hbm2ddl:
+          auto: create-drop
+
