@@ -9,9 +9,9 @@ import ru.practicum.shareit.booking.dto.BookingStatusDto;
 import ru.practicum.shareit.booking.dto.State;
 import ru.practicum.shareit.exeption.BadRequestException;
 import ru.practicum.shareit.exeption.NotFoundException;
-import ru.practicum.shareit.item.ItemJpaRepository;
+import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.UserJpaRepository;
+import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.mopel.User;
 
 import java.util.List;
@@ -23,9 +23,9 @@ import java.util.stream.Collectors;
 public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository bookingRepository;
-    private final UserJpaRepository userJpaRepository;
+    private final UserRepository userRepository;
     private final BookingMapper bookingMapper;
-    private final ItemJpaRepository itemJpaRepository;
+    private final ItemRepository itemRepository;
 
     @Override
     public BookingStatusDto getById(Long userId, Long bookingId) {
@@ -44,8 +44,8 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingStatusDto create(Long bookerId, BookingDto bookingDto) {
-        User booker = userJpaRepository.findById(bookerId)
-                                       .orElseThrow(() -> {
+        User booker = userRepository.findById(bookerId)
+                                    .orElseThrow(() -> {
                                            log.error("User with id " + bookerId + " not found!");
                                            return new NotFoundException(
                                                    "User with id " + bookerId + " not found!"
@@ -53,8 +53,8 @@ public class BookingServiceImpl implements BookingService {
                                        });
 
         Long itemId = bookingDto.getItemId();
-        Item item = itemJpaRepository.findById(itemId)
-                                     .orElseThrow(() -> {
+        Item item = itemRepository.findById(itemId)
+                                  .orElseThrow(() -> {
                                          log.error("Item with id {} not found", itemId);
                                          return new NotFoundException(
                                                  "Item not found with id: " + itemId
