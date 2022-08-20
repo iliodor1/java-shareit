@@ -36,8 +36,9 @@ public class UserServiceImpl implements UserService {
         if (newUser.getName() != null) {
             oldUser.setName(newUser.getName());
         }
+        User user = userRepository.save(oldUser);
 
-        return userMapper.toDto(userRepository.save(oldUser));
+        return userMapper.toDto(user);
     }
 
     @Override
