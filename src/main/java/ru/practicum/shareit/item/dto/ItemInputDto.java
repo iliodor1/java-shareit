@@ -18,9 +18,11 @@ public class ItemInputDto {
     @NotBlank(groups = OnCreate.class, message = "The name should not be null or blank.")
     @NullOrNotBlank(groups = OnUpdate.class, message = "The name should be null or not blank.")
     String name;
+
     @NotBlank(groups = OnCreate.class, message = "Description should not be null or blank.")
     @NullOrNotBlank(groups = OnUpdate.class, message = "Description should be null or not blank.")
     String description;
+
     @NotNull(groups = OnCreate.class, message = "The available should be not null.")
     Boolean available;
 

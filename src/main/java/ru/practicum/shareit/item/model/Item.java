@@ -19,9 +19,13 @@ public class Item {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     Long id;
+
     String name;
+
     String description;
+
     Boolean available;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
     User owner;
