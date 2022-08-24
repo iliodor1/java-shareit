@@ -34,16 +34,17 @@ public class Booking {
     @JoinColumn(name = "booker_id", referencedColumnName = "id")
     User booker;
 
+    @Column(name = "booking_status")
     @Enumerated(EnumType.STRING)
-    Status status;
+    BookingStatus bookingStatus;
 
-    public Booking(Long id, LocalDateTime start, LocalDateTime end, Item item, User booker, Status status) {
+    public Booking(Long id, LocalDateTime start, LocalDateTime end, Item item, User booker, BookingStatus bookingStatus) {
         this.id = id;
         this.start = start;
         this.end = end;
         this.item = item;
         this.booker = booker;
-        this.status = status;
+        this.bookingStatus = bookingStatus;
     }
 
 }
