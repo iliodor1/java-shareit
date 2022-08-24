@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Slf4j
 public class ItemServiceImpl implements ItemService {
-    private final ItemJpaRepository itemRepository;
+    private final ItemRepository itemRepository;
     private final BookingRepository bookingRepository;
     private final UserService userService;
     private final ItemMapper itemMapper;
