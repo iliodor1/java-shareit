@@ -2,6 +2,8 @@ package ru.practicum.shareit.booking;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import ru.practicum.shareit.booking.mopel.Booking;
+import ru.practicum.shareit.booking.mopel.BookingStatus;
 
 import java.util.List;
 import java.util.Optional;

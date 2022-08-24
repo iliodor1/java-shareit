@@ -1,6 +1,6 @@
-package ru.practicum.shareit.booking.dto;
+package ru.practicum.shareit.booking.mopel;
 
-public enum State {
+public enum BookingState {
     ALL,
     CURRENT,
     PAST,

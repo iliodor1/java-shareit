@@ -18,12 +18,16 @@ import static javax.persistence.GenerationType.IDENTITY;
 public class Item {
     @Id
     @GeneratedValue(strategy = IDENTITY)
+    @Column(name = "id")
     Long id;
 
+    @Column(name = "name")
     String name;
 
+    @Column(name = "description")
     String description;
 
+    @Column(name = "available")
     Boolean available;
 
     @ManyToOne(fetch = FetchType.LAZY)

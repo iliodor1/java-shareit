@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingStatusDto;
-import ru.practicum.shareit.booking.dto.State;
+import ru.practicum.shareit.booking.mopel.BookingState;
 import ru.practicum.shareit.exeption.BadRequestException;
 
 import javax.validation.Valid;
@@ -52,16 +52,16 @@ public class BookingController {
         return bookingService.getByOwnerId(ownerId, getEnumState(state));
     }
 
-    private State getEnumState(String state) {
-        State stateEnum;
+    private BookingState getEnumState(String state) {
+        BookingState bookingStateEnum;
         try {
-            stateEnum = State.valueOf(state.toUpperCase());
+            bookingStateEnum = BookingState.valueOf(state.toUpperCase());
         } catch (IllegalArgumentException e) {
             log.error(state);
             throw new BadRequestException("Unknown state: " + state);
         }
 
-        return stateEnum;
+        return bookingStateEnum;
     }
 
 }

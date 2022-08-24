@@ -1,4 +1,4 @@
-package ru.practicum.shareit.booking;
+package ru.practicum.shareit.booking.mopel;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     Long id;
 
     @Column(name = "start_date")
@@ -34,8 +35,8 @@ public class Booking {
     @JoinColumn(name = "booker_id", referencedColumnName = "id")
     User booker;
 
-    @Column(name = "booking_status")
     @Enumerated(EnumType.STRING)
+    @Column(name = "booking_status")
     BookingStatus bookingStatus;
 
     public Booking(Long id, LocalDateTime start, LocalDateTime end, Item item, User booker, BookingStatus bookingStatus) {

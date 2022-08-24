@@ -6,7 +6,9 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.dto.BookingStatusDto;
-import ru.practicum.shareit.booking.dto.State;
+import ru.practicum.shareit.booking.mopel.BookingState;
+import ru.practicum.shareit.booking.mopel.Booking;
+import ru.practicum.shareit.booking.mopel.BookingStatus;
 import ru.practicum.shareit.exeption.BadRequestException;
 import ru.practicum.shareit.exeption.NotFoundException;
 import ru.practicum.shareit.item.ItemRepository;
@@ -99,9 +101,9 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingStatusDto> getByBookerId(Long bookerId, State state) {
+    public List<BookingStatusDto> getByBookerId(Long bookerId, BookingState bookingState) {
         List<Booking> bookings = List.of();
-        switch (state) {
+        switch (bookingState) {
             case ALL:
                 bookings = bookingRepository.findAllByBooker(bookerId);
                 if (bookings.isEmpty()) {
@@ -132,9 +134,9 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingStatusDto> getByOwnerId(Long ownerId, State state) {
+    public List<BookingStatusDto> getByOwnerId(Long ownerId, BookingState bookingState) {
         List<Booking> bookings = List.of();
-        switch (state) {
+        switch (bookingState) {
             case ALL:
                 bookings = bookingRepository.findAllByOwner(ownerId);
                 if (bookings.isEmpty()) {

@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item;
+package ru.practicum.shareit.item.model;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -18,11 +18,14 @@ import java.time.LocalDateTime;
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     Long id;
 
     @Size(min = 1)
+    @Column(name = "text")
     String text;
 
+    @Column(name = "created")
     LocalDateTime created;
 
     @ManyToOne
