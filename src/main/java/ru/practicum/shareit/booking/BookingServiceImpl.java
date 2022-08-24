@@ -99,15 +99,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingStatusDto> getByBookerId(Long bookerId, String stateString) {
-        State state;
-        try {
-            state = State.valueOf(stateString.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            log.error(stateString);
-            throw new BadRequestException("Unknown state: " + stateString);
-        }
-
+    public List<BookingStatusDto> getByBookerId(Long bookerId, State state) {
         List<Booking> bookings = List.of();
         switch (state) {
             case ALL:
@@ -140,15 +132,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingStatusDto> getByOwnerId(Long ownerId, String stateString) {
-        State state;
-        try {
-            state = State.valueOf(stateString.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            log.error(stateString);
-            throw new BadRequestException("Unknown state: " + stateString);
-        }
-
+    public List<BookingStatusDto> getByOwnerId(Long ownerId, State state) {
         List<Booking> bookings = List.of();
         switch (state) {
             case ALL:

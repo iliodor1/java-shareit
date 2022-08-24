@@ -1,9 +1,12 @@
 package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingStatusDto;
+import ru.practicum.shareit.booking.dto.State;
+import ru.practicum.shareit.exeption.BadRequestException;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -11,6 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/bookings")
 @RequiredArgsConstructor
+@Slf4j
 public class BookingController {
 
     private final BookingService bookingService;
@@ -38,14 +42,26 @@ public class BookingController {
     public List<BookingStatusDto> getByBookerId(@RequestHeader("X-Sharer-User-Id") Long bookerId,
                                                     @RequestParam(required = false,
                                                             defaultValue = "ALL") String state) {
-        return bookingService.getByBookerId(bookerId, state);
+        return bookingService.getByBookerId(bookerId, getEnumState(state));
     }
 
     @GetMapping("owner")
     public List<BookingStatusDto> getByOwnerId(@RequestHeader("X-Sharer-User-Id") Long ownerId,
                                                    @RequestParam(required = false,
                                                            defaultValue = "ALL") String state) {
-        return bookingService.getByOwnerId(ownerId, state);
+        return bookingService.getByOwnerId(ownerId, getEnumState(state));
+    }
+
+    private State getEnumState(String state) {
+        State stateEnum;
+        try {
+            stateEnum = State.valueOf(state.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            log.error(state);
+            throw new BadRequestException("Unknown state: " + state);
+        }
+
+        return stateEnum;
     }
 
 }
