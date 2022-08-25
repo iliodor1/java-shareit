@@ -18,20 +18,20 @@ import static javax.persistence.GenerationType.IDENTITY;
 public class Item {
     @Id
     @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "id")
+    @Column(name = "id", nullable = false)
     Long id;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     String name;
 
-    @Column(name = "description")
+    @Column(name = "description", nullable = false, length = 1000)
     String description;
 
     @Column(name = "available")
     Boolean available;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id", referencedColumnName = "id")
+    @JoinColumn(name = "owner_id", referencedColumnName = "id", nullable = false)
     User owner;
 
     public Item(Long id, String name, String description, Boolean available, User owner) {
