@@ -4,17 +4,16 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.dto.BookingStatusDto;
-import ru.practicum.shareit.booking.mopel.BookingState;
-import ru.practicum.shareit.booking.mopel.Booking;
-import ru.practicum.shareit.booking.mopel.BookingStatus;
+import ru.practicum.shareit.booking.model.BookingState;
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.exeption.BadRequestException;
 import ru.practicum.shareit.exeption.NotFoundException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
-import ru.practicum.shareit.user.mopel.User;
+import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -79,7 +78,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingStatusDto approve(Long ownerId, Long bookingId, boolean approved) {
         Booking booking = findBookingById(bookingId);
-        if (booking.getBookingStatus().equals(BookingStatus.APPROVED)) {
+        if (booking.getStatus().equals(BookingStatus.APPROVED)) {
             log.error("Booking status can't change after approve");
             throw new BadRequestException("Booking status can't change after approve");
         }
@@ -92,9 +91,9 @@ public class BookingServiceImpl implements BookingService {
         }
 
         if (approved) {
-            booking.setBookingStatus(BookingStatus.APPROVED);
+            booking.setStatus(BookingStatus.APPROVED);
         } else {
-            booking.setBookingStatus(BookingStatus.REJECTED);
+            booking.setStatus(BookingStatus.REJECTED);
         }
 
         return bookingMapper.toBookingDto(bookingRepository.save(booking));
@@ -121,10 +120,10 @@ public class BookingServiceImpl implements BookingService {
                 bookings = bookingRepository.findAllByBookerAndCurrentState(bookerId);
                 break;
             case WAITING:
-                bookings = bookingRepository.findAllByBookerIdAndBookingStatus(bookerId, BookingStatus.WAITING);
+                bookings = bookingRepository.findAllByBookerIdAndStatus(bookerId, BookingStatus.WAITING);
                 break;
             case REJECTED:
-                bookings = bookingRepository.findAllByBookerIdAndBookingStatus(bookerId, BookingStatus.REJECTED);
+                bookings = bookingRepository.findAllByBookerIdAndStatus(bookerId, BookingStatus.REJECTED);
                 break;
         }
 

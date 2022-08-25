@@ -2,8 +2,8 @@ package ru.practicum.shareit.booking;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import ru.practicum.shareit.booking.mopel.Booking;
-import ru.practicum.shareit.booking.mopel.BookingStatus;
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.BookingStatus;
 
 import java.util.List;
 import java.util.Optional;
@@ -72,10 +72,10 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "order by b.start desc")
     List<Booking> findAllByOwnerAndCurrentState(Long ownerId);
 
-    List<Booking> findAllByBookerIdAndBookingStatus(Long bookerId, BookingStatus bookingStatus);
+    List<Booking> findAllByBookerIdAndStatus(Long bookerId, BookingStatus status);
 
-    @Query("select b from Booking b where b.item.owner.id = ?1 and b.bookingStatus = ?2")
-    List<Booking> findAllByOwnerIdAndStatus(Long ownerId, BookingStatus bookingStatus);
+    @Query("select b from Booking b where b.item.owner.id = ?1 and b.status = ?2")
+    List<Booking> findAllByOwnerIdAndStatus(Long ownerId, BookingStatus status);
 
 
 }

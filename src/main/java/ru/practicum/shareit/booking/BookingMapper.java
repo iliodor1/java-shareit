@@ -1,12 +1,14 @@
-package ru.practicum.shareit.booking.dto;
+package ru.practicum.shareit.booking;
 
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.booking.mopel.Booking;
-import ru.practicum.shareit.booking.mopel.BookingStatus;
+import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingStatusDto;
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.item.dto.ItemInputDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.mopel.User;
+import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 
@@ -25,7 +27,7 @@ public class BookingMapper {
         Long id = booking.getId();
         LocalDateTime start = booking.getStart();
         LocalDateTime end = booking.getEnd();
-        BookingStatus bookingStatus = booking.getBookingStatus();
+        BookingStatus bookingStatus = booking.getStatus();
         User booker = booking.getBooker();
         UserDto bookerDto = new UserDto(booker.getId(), booker.getName(), booker.getEmail());
         Item item = booking.getItem();

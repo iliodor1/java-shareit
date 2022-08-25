@@ -1,4 +1,4 @@
-package ru.practicum.shareit.user.mopel;
+package ru.practicum.shareit.user.model;
 
 import lombok.AccessLevel;
 import lombok.Data;

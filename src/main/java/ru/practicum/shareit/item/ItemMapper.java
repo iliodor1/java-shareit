@@ -1,9 +1,11 @@
-package ru.practicum.shareit.item.dto;
+package ru.practicum.shareit.item;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
+import ru.practicum.shareit.item.dto.ItemInputDto;
+import ru.practicum.shareit.item.dto.ItemOutputDto;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.mopel.User;
+import ru.practicum.shareit.user.model.User;
 
 @Component
 @AllArgsConstructor
