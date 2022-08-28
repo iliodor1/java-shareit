@@ -21,7 +21,7 @@ public class BookingController {
 
     @PostMapping
     public BookingStatusDto create(@RequestHeader("X-Sharer-User-Id") Long bookerId,
-                             @Valid @RequestBody BookingDto bookingDto) {
+                                   @Valid @RequestBody BookingDto bookingDto) {
         return bookingService.create(bookerId, bookingDto);
     }
 
@@ -40,15 +40,15 @@ public class BookingController {
 
     @GetMapping
     public List<BookingStatusDto> getByBookerId(@RequestHeader("X-Sharer-User-Id") Long bookerId,
-                                                    @RequestParam(required = false,
-                                                            defaultValue = "ALL") String state) {
+                                                @RequestParam(required = false,
+                                                        defaultValue = "ALL") String state) {
         return bookingService.getByBookerId(bookerId, getEnumState(state));
     }
 
     @GetMapping("owner")
     public List<BookingStatusDto> getByOwnerId(@RequestHeader("X-Sharer-User-Id") Long ownerId,
-                                                   @RequestParam(required = false,
-                                                           defaultValue = "ALL") String state) {
+                                               @RequestParam(required = false,
+                                                       defaultValue = "ALL") String state) {
         return bookingService.getByOwnerId(ownerId, getEnumState(state));
     }
 

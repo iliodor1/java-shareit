@@ -26,4 +26,6 @@ public class ItemInputDto {
     @NotNull(groups = OnCreate.class, message = "The available should be not null.")
     Boolean available;
 
+    Long requestId;
+
 }

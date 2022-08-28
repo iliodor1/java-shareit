@@ -38,8 +38,8 @@ public class BookingServiceImpl implements BookingService {
         if (bookerId.equals(userId) || ownerId.equals(userId)) {
             return bookingMapper.toBookingDto(booking);
         } else {
-            log.error("Only the item owner or the booker can get the booking");
-            throw new NotFoundException("Only the item owner or the booker can get the booking");
+            log.error("Only the item owner or the booker can getById the booking");
+            throw new NotFoundException("Only the item owner or the booker can getById the booking");
         }
     }
 

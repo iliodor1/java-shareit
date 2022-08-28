@@ -1,11 +1,12 @@
 package ru.practicum.shareit.booking;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingStatusDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
-import ru.practicum.shareit.item.dto.ItemInputDto;
+import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
@@ -13,7 +14,10 @@ import ru.practicum.shareit.user.model.User;
 import java.time.LocalDateTime;
 
 @Component
+@RequiredArgsConstructor
 public class BookingMapper {
+
+    private final ItemMapper itemMapper;
 
     public Booking toBooking(BookingDto bookingDto, User booker, Item item, BookingStatus bookingStatus) {
         Long id = bookingDto.getId();
@@ -31,10 +35,8 @@ public class BookingMapper {
         User booker = booking.getBooker();
         UserDto bookerDto = new UserDto(booker.getId(), booker.getName(), booker.getEmail());
         Item item = booking.getItem();
-        ItemInputDto itemInputDto = new ItemInputDto(item.getId(), item.getName(),
-                item.getDescription(),item.getAvailable());
 
-        return new BookingStatusDto(id, start, end, bookingStatus, bookerDto, itemInputDto);
+        return new BookingStatusDto(id, start, end, bookingStatus, bookerDto, itemMapper.toInputDto(item));
     }
 
 }

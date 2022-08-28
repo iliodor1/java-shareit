@@ -20,5 +20,6 @@ public class ItemOutputDto {
     Boolean available;
     BookingItemOutputDto lastBooking;
     BookingItemOutputDto nextBooking;
+    Long requestId;
     List<CommentDto> comments;
 }

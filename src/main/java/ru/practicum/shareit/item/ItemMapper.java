@@ -16,8 +16,9 @@ public class ItemMapper {
         String name = item.getName();
         String description = item.getDescription();
         Boolean available = item.getAvailable();
+        Long requestId = item.getRequest() == null ? null : item.getRequest().getId();
 
-        return new ItemInputDto(id, name, description, available);
+        return new ItemInputDto(id, name, description, available, requestId);
     }
 
     public ItemOutputDto toOutputDto(Item item) {
@@ -27,6 +28,9 @@ public class ItemMapper {
         itemOutputDto.setName(item.getName());
         itemOutputDto.setDescription(item.getDescription());
         itemOutputDto.setAvailable(item.getAvailable());
+
+        Long requestId = item.getRequest() == null ? null : item.getRequest().getId();
+        itemOutputDto.setRequestId(requestId);
 
         return itemOutputDto;
     }

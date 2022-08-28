@@ -11,6 +11,9 @@ import ru.practicum.shareit.exeption.NotFoundException;
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.ItemRequestRepository;
+import ru.practicum.shareit.request.ItemRequestService;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.UserMapper;
@@ -18,6 +21,7 @@ import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,6 +31,7 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final BookingRepository bookingRepository;
     private final UserService userService;
+    private final ItemRequestRepository itemRequestRepository;
     private final ItemMapper itemMapper;
     private final UserMapper userMapper;
     private final CommentMapper commentMapper;
@@ -56,8 +61,12 @@ public class ItemServiceImpl implements ItemService {
     public ItemInputDto create(Long ownerId, ItemInputDto itemInputDto) {
         UserDto ownerDto = userService.getUser(ownerId);
         User owner = userMapper.toUser(ownerDto);
+        Optional<ItemRequest> itemRequest = itemInputDto.getRequestId() == null ? Optional.empty() :
+                itemRequestRepository.findById(itemInputDto.getRequestId());
 
         Item item = itemMapper.toItem(itemInputDto, owner);
+
+        itemRequest.ifPresent(item::setRequest);
 
         return itemMapper.toInputDto(itemRepository.save(item));
     }
@@ -138,7 +147,8 @@ public class ItemServiceImpl implements ItemService {
 
         if (lastBooking != null) {
             lastBookingItemOutputDto = new BookingItemOutputDto(lastBooking.getId(),
-                    lastBooking.getBooker().getId());
+                    lastBooking.getBooker()
+                               .getId());
             itemOutputDto.setLastBooking(lastBookingItemOutputDto);
         }
         if (nextBooking != null) {
