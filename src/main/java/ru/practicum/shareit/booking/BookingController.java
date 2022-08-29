@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingStatusDto;
@@ -9,12 +10,15 @@ import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.exeption.BadRequestException;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @RestController
 @RequestMapping(path = "/bookings")
 @RequiredArgsConstructor
 @Slf4j
+@Validated
 public class BookingController {
 
     private final BookingService bookingService;
@@ -41,15 +45,23 @@ public class BookingController {
     @GetMapping
     public List<BookingStatusDto> getByBookerId(@RequestHeader("X-Sharer-User-Id") Long bookerId,
                                                 @RequestParam(required = false,
-                                                        defaultValue = "ALL") String state) {
-        return bookingService.getByBookerId(bookerId, getEnumState(state));
+                                                        defaultValue = "ALL") String state,
+                                                @RequestParam(required = false, defaultValue = "0")
+                                                    @PositiveOrZero Integer from,
+                                                @RequestParam(required = false, defaultValue = "20")
+                                                    @Positive Integer size) {
+        return bookingService.getByBookerId(bookerId, getEnumState(state), from, size);
     }
 
     @GetMapping("owner")
     public List<BookingStatusDto> getByOwnerId(@RequestHeader("X-Sharer-User-Id") Long ownerId,
                                                @RequestParam(required = false,
-                                                       defaultValue = "ALL") String state) {
-        return bookingService.getByOwnerId(ownerId, getEnumState(state));
+                                                       defaultValue = "ALL") String state,
+                                               @RequestParam(required = false, defaultValue = "0")
+                                                   @PositiveOrZero Integer from,
+                                               @RequestParam(required = false, defaultValue = "20")
+                                                   @Positive Integer size) {
+        return bookingService.getByOwnerId(ownerId, getEnumState(state), from, size);
     }
 
     private BookingState getEnumState(String state) {

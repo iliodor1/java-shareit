@@ -2,6 +2,9 @@ package ru.practicum.shareit.booking;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingStatusDto;
@@ -47,27 +50,29 @@ public class BookingServiceImpl implements BookingService {
     public BookingStatusDto create(Long bookerId, BookingDto bookingDto) {
         User booker = userRepository.findById(bookerId)
                                     .orElseThrow(() -> {
-                                           log.error("User with id " + bookerId + " not found!");
-                                           return new NotFoundException(
-                                                   "User with id " + bookerId + " not found!"
-                                           );
-                                       });
+                                        log.error("User with id " + bookerId + " not found!");
+                                        return new NotFoundException(
+                                                "User with id " + bookerId + " not found!"
+                                        );
+                                    });
 
         Long itemId = bookingDto.getItemId();
         Item item = itemRepository.findById(itemId)
                                   .orElseThrow(() -> {
-                                         log.error("Item with id {} not found", itemId);
-                                         return new NotFoundException(
-                                                 "Item not found with id: " + itemId
-                                         );
-                                     });
+                                      log.error("Item with id {} not found", itemId);
+                                      return new NotFoundException(
+                                              "Item not found with id: " + itemId
+                                      );
+                                  });
 
-        if (bookerId.equals(item.getOwner().getId())) {
+        if (bookerId.equals(item.getOwner()
+                                .getId())) {
             log.error("User can't booking own item");
             throw new NotFoundException("User can't booking own item");
         }
 
-        if (item.getAvailable().equals(false)) {
+        if (item.getAvailable()
+                .equals(false)) {
             throw new BadRequestException("The item is not available!");
         }
         Booking booking = bookingMapper.toBooking(bookingDto, booker, item, BookingStatus.WAITING);
@@ -83,7 +88,9 @@ public class BookingServiceImpl implements BookingService {
             throw new BadRequestException("Booking status can't change after approve");
         }
 
-        Long itemOwnerId = booking.getItem().getOwner().getId();
+        Long itemOwnerId = booking.getItem()
+                                  .getOwner()
+                                  .getId();
 
         if (!itemOwnerId.equals(ownerId)) {
             log.error("User with id {} tries to approve not own item", itemOwnerId);
@@ -100,30 +107,46 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingStatusDto> getByBookerId(Long bookerId, BookingState bookingState) {
+    public List<BookingStatusDto> getByBookerId(Long bookerId,
+                                                BookingState bookingState,
+                                                Integer from,
+                                                Integer size) {
         List<Booking> bookings = List.of();
+
+        Pageable pageable = PageRequest.of(from/size, size, Sort.by("start").descending());
+
         switch (bookingState) {
             case ALL:
-                bookings = bookingRepository.findAllByBooker(bookerId);
+                bookings = bookingRepository.findAllByBooker(bookerId, pageable)
+                                            .toList();
                 if (bookings.isEmpty()) {
                     log.error("No bookings for booker with id {}", bookerId);
                     throw new NotFoundException("No bookings for booker with id " + bookerId);
                 }
                 break;
             case PAST:
-                bookings = bookingRepository.findAllByBookerAndPastState(bookerId);
+                bookings = bookingRepository.findAllByBookerAndPastState(bookerId, pageable)
+                                            .toList();
                 break;
             case FUTURE:
-                bookings = bookingRepository.findAllByBookerAndFutureState(bookerId);
+                bookings = bookingRepository.findAllByBookerAndFutureState(bookerId, pageable)
+                                            .toList();
                 break;
             case CURRENT:
-                bookings = bookingRepository.findAllByBookerAndCurrentState(bookerId);
+                bookings = bookingRepository.findAllByBookerAndCurrentState(bookerId, pageable)
+                                            .toList();
                 break;
             case WAITING:
-                bookings = bookingRepository.findAllByBookerIdAndStatus(bookerId, BookingStatus.WAITING);
+                bookings = bookingRepository.findAllByBookerIdAndStatus(bookerId,
+                                                    BookingStatus.WAITING,
+                                                    pageable)
+                                            .toList();
                 break;
             case REJECTED:
-                bookings = bookingRepository.findAllByBookerIdAndStatus(bookerId, BookingStatus.REJECTED);
+                bookings = bookingRepository.findAllByBookerIdAndStatus(bookerId,
+                                                    BookingStatus.REJECTED,
+                                                    pageable)
+                                            .toList();
                 break;
         }
 
@@ -133,30 +156,42 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingStatusDto> getByOwnerId(Long ownerId, BookingState bookingState) {
+    public List<BookingStatusDto> getByOwnerId(Long ownerId,
+                                               BookingState bookingState,
+                                               Integer from,
+                                               Integer size) {
         List<Booking> bookings = List.of();
+
+        Pageable pageable = PageRequest.of(from/size, size, Sort.by("start").descending());
+
         switch (bookingState) {
             case ALL:
-                bookings = bookingRepository.findAllByOwner(ownerId);
+                bookings = bookingRepository.findAllByOwner(ownerId,pageable)
+                                            .toList();
                 if (bookings.isEmpty()) {
                     log.error("No bookings for owner with id {}", ownerId);
                     throw new NotFoundException("No bookings for owner with id " + ownerId);
                 }
                 break;
             case PAST:
-                bookings = bookingRepository.findAllByOwnerAndPastState(ownerId);
+                bookings = bookingRepository.findAllByOwnerAndPastState(ownerId, pageable)
+                                            .toList();
                 break;
             case FUTURE:
-                bookings = bookingRepository.findAllByOwnerAndFutureState(ownerId);
+                bookings = bookingRepository.findAllByOwnerAndFutureState(ownerId, pageable)
+                                            .toList();
                 break;
             case CURRENT:
-                bookings = bookingRepository.findAllByOwnerAndCurrentState(ownerId);
+                bookings = bookingRepository.findAllByOwnerAndCurrentState(ownerId, pageable)
+                                            .toList();
                 break;
             case WAITING:
-                bookings = bookingRepository.findAllByOwnerIdAndStatus(ownerId, BookingStatus.WAITING);
+                bookings = bookingRepository.findAllByOwnerIdAndStatus(ownerId, BookingStatus.WAITING, pageable)
+                                            .toList();
                 break;
             case REJECTED:
-                bookings = bookingRepository.findAllByOwnerIdAndStatus(ownerId, BookingStatus.REJECTED);
+                bookings = bookingRepository.findAllByOwnerIdAndStatus(ownerId, BookingStatus.REJECTED, pageable)
+                                            .toList();
                 break;
         }
 

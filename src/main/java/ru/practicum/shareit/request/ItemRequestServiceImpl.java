@@ -1,8 +1,10 @@
 package ru.practicum.shareit.request;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exeption.NotFoundException;
 import ru.practicum.shareit.item.ItemMapper;
@@ -21,6 +23,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ItemRequestServiceImpl implements ItemRequestService {
     private final ItemRequestRepository itemRequestRepository;
     private final ItemRequestMapper itemRequestMapper;
@@ -33,10 +36,14 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     public ItemRequestDto getById(Long requesterId, Long requestId) {
         userService.getUser(requesterId);
 
-        ItemRequest itemRequest = itemRequestRepository.findById(requestId)
-                                                       .orElseThrow(() -> new NotFoundException(
-                                                               "Item request with id " + requestId + " not exist"
-                                                       ));
+        ItemRequest itemRequest =
+                itemRequestRepository.findById(requestId)
+                                     .orElseThrow(() -> {
+                                         log.error("Item request with id " + requestId + " not exist");
+                                         return new NotFoundException(
+                                                 "Item request with id " + requestId + " not exist"
+                                         );
+                                     });
 
         return itemRequestMapper.toDto(itemRequest, getItemsByRequestId(requestId));
     }
@@ -67,9 +74,14 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     public List<ItemRequestDto> getAllRequests(Long userId, Integer from, Integer size) {
         userMapper.toUser(userService.getUser(userId));
 
-        Page<ItemRequest> requests = itemRequestRepository.findAll(PageRequest.of(from, size));
+        Page<ItemRequest> requests = itemRequestRepository
+                .findAll(PageRequest.of(from / size, size, Sort.by("created")
+                                                               .descending()));
 
-        return requests.stream().filter(r-> !(r.getRequester().getId().equals(userId)))
+        return requests.stream()
+                       .filter(r -> !(r.getRequester()
+                                       .getId()
+                                       .equals(userId)))
                        .map(r -> itemRequestMapper.toDto(r, getItemsByRequestId(r.getId())))
                        .collect(Collectors.toList());
     }

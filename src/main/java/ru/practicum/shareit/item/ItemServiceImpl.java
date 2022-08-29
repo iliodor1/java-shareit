@@ -2,6 +2,8 @@ package ru.practicum.shareit.item;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.BookingRepository;
@@ -12,7 +14,6 @@ import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.ItemRequestRepository;
-import ru.practicum.shareit.request.ItemRequestService;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -49,8 +50,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemOutputDto> getOwnItems(Long ownerId) {
-        List<Item> items = itemRepository.findAllByOwnerIdOrderById(ownerId);
+    public List<ItemOutputDto> getOwnItems(Long ownerId, Integer from, Integer size) {
+        List<Item> items = itemRepository.findAllByOwnerIdOrderById(ownerId,
+                                                 PageRequest.of(from / size, size))
+                                         .toList();
 
         return items.stream()
                     .map(i -> getItemOutputDto(i, ownerId))
@@ -102,12 +105,12 @@ public class ItemServiceImpl implements ItemService {
 
 
     @Override
-    public List<ItemInputDto> searchItem(String text) {
+    public List<ItemInputDto> searchItem(String text, Integer from, Integer size) {
         if (text.isBlank()) {
             return List.of();
         }
 
-        List<Item> items = itemRepository.searchItem(text);
+        List<Item> items = itemRepository.searchItem(text, PageRequest.of(from / size, size));
 
         return items.stream()
                     .map(itemMapper::toInputDto)

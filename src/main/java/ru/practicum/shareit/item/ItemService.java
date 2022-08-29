@@ -10,13 +10,13 @@ public interface ItemService {
 
     ItemOutputDto getItem(Long id, Long userId);
 
-    List<ItemOutputDto> getOwnItems(Long ownerId);
+    List<ItemOutputDto> getOwnItems(Long ownerId, Integer from, Integer size);
 
     ItemInputDto create(Long ownerId, ItemInputDto itemInputDto);
 
     ItemInputDto update(Long ownerId, Long itemId, ItemInputDto itemInputDto);
 
-    List<ItemInputDto> searchItem(String text);
+    List<ItemInputDto> searchItem(String text, Integer from, Integer size);
 
     CommentDto createComment(Long bookerId, Long itemId, CommentDto commentDto);
 
