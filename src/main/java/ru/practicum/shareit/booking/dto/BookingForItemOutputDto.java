@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class BookingItemOutputDto {
+public class BookingForItemOutputDto {
     Long id;
     Long bookerId;
 }
