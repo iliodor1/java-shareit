@@ -7,11 +7,10 @@ import ru.practicum.shareit.item.dto.ItemOutputDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
-@Component
 @AllArgsConstructor
 public class ItemMapper {
 
-    public ItemInputDto toInputDto(Item item) {
+    public static ItemInputDto toInputDto(Item item) {
         Long id = item.getId();
         String name = item.getName();
         String description = item.getDescription();
@@ -21,7 +20,7 @@ public class ItemMapper {
         return new ItemInputDto(id, name, description, available, requestId);
     }
 
-    public ItemOutputDto toOutputDto(Item item) {
+    public static ItemOutputDto toOutputDto(Item item) {
         ItemOutputDto itemOutputDto = new ItemOutputDto();
 
         itemOutputDto.setId(item.getId());
@@ -35,7 +34,7 @@ public class ItemMapper {
         return itemOutputDto;
     }
 
-    public Item toItem(ItemInputDto itemInputDto, User owner) {
+    public static Item toItem(ItemInputDto itemInputDto, User owner) {
         Long id = itemInputDto.getId();
         String name = itemInputDto.getName();
         String description = itemInputDto.getDescription();

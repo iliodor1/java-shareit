@@ -1,9 +1,8 @@
 package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.dto.BookingStatusDto;
+import ru.practicum.shareit.booking.dto.BookingWithStatusDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.item.ItemMapper;
@@ -13,13 +12,10 @@ import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 
-@Component
 @RequiredArgsConstructor
 public class BookingMapper {
 
-    private final ItemMapper itemMapper;
-
-    public Booking toBooking(BookingDto bookingDto, User booker, Item item, BookingStatus bookingStatus) {
+    public static Booking toBooking(BookingDto bookingDto, User booker, Item item, BookingStatus bookingStatus) {
         Long id = bookingDto.getId();
         LocalDateTime start = bookingDto.getStart();
         LocalDateTime end = bookingDto.getEnd();
@@ -27,16 +23,20 @@ public class BookingMapper {
         return new Booking(id, start, end, item, booker, bookingStatus);
     }
 
-    public BookingStatusDto toBookingDto(Booking booking) {
+    public static BookingWithStatusDto toBookingDto(Booking booking) {
         Long id = booking.getId();
         LocalDateTime start = booking.getStart();
         LocalDateTime end = booking.getEnd();
         BookingStatus bookingStatus = booking.getStatus();
         User booker = booking.getBooker();
-        UserDto bookerDto = new UserDto(booker.getId(), booker.getName(), booker.getEmail());
+        UserDto bookerDto = UserDto.builder()
+                                   .id(booker.getId())
+                                   .name(booker.getName())
+                                   .email(booker.getEmail())
+                                   .build();
         Item item = booking.getItem();
 
-        return new BookingStatusDto(id, start, end, bookingStatus, bookerDto, itemMapper.toInputDto(item));
+        return new BookingWithStatusDto(id, start, end, bookingStatus, bookerDto, ItemMapper.toInputDto(item));
     }
 
 }

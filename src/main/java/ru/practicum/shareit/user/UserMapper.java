@@ -4,18 +4,21 @@ import org.springframework.stereotype.Component;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
-@Component
 public class UserMapper {
 
-    public UserDto toDto(User user) {
+    public static UserDto toDto(User user) {
         Long id = user.getId();
         String name = user.getName();
         String email = user.getEmail();
 
-        return new UserDto(id, name, email);
+        return UserDto.builder()
+                      .id(id)
+                      .name(name)
+                      .email(email)
+                      .build();
     }
 
-    public User toUser(UserDto userDto) {
+    public static User toUser(UserDto userDto) {
         Long id = userDto.getId();
         String name = userDto.getName();
         String email = userDto.getEmail();

@@ -3,11 +3,10 @@ package ru.practicum.shareit.item;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.BookingRepository;
-import ru.practicum.shareit.booking.dto.BookingItemOutputDto;
+import ru.practicum.shareit.booking.dto.BookingForItemOutputDto;
 import ru.practicum.shareit.exeption.BadRequestException;
 import ru.practicum.shareit.exeption.NotFoundException;
 import ru.practicum.shareit.item.dto.*;
@@ -33,9 +32,6 @@ public class ItemServiceImpl implements ItemService {
     private final BookingRepository bookingRepository;
     private final UserService userService;
     private final ItemRequestRepository itemRequestRepository;
-    private final ItemMapper itemMapper;
-    private final UserMapper userMapper;
-    private final CommentMapper commentMapper;
     private final CommentRepository commentRepository;
 
     @Override
@@ -51,8 +47,10 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemOutputDto> getOwnItems(Long ownerId, Integer from, Integer size) {
+        int page = from < size ? 0 : from / size;
+
         List<Item> items = itemRepository.findAllByOwnerIdOrderById(ownerId,
-                                                 PageRequest.of(from / size, size))
+                                                 PageRequest.of(page, size))
                                          .toList();
 
         return items.stream()
@@ -63,15 +61,15 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemInputDto create(Long ownerId, ItemInputDto itemInputDto) {
         UserDto ownerDto = userService.getUser(ownerId);
-        User owner = userMapper.toUser(ownerDto);
+        User owner = UserMapper.toUser(ownerDto);
         Optional<ItemRequest> itemRequest = itemInputDto.getRequestId() == null ? Optional.empty() :
                 itemRequestRepository.findById(itemInputDto.getRequestId());
 
-        Item item = itemMapper.toItem(itemInputDto, owner);
+        Item item = ItemMapper.toItem(itemInputDto, owner);
 
         itemRequest.ifPresent(item::setRequest);
 
-        return itemMapper.toInputDto(itemRepository.save(item));
+        return ItemMapper.toInputDto(itemRepository.save(item));
     }
 
     @Override
@@ -84,7 +82,7 @@ public class ItemServiceImpl implements ItemService {
                                          );
                                      });
 
-        Item newItem = itemMapper.toItem(itemInputDto, null);
+        Item newItem = ItemMapper.toItem(itemInputDto, null);
 
         String name = newItem.getName();
         String description = newItem.getDescription();
@@ -100,20 +98,22 @@ public class ItemServiceImpl implements ItemService {
             oldItem.setAvailable(available);
         }
 
-        return itemMapper.toInputDto(itemRepository.save(oldItem));
+        return ItemMapper.toInputDto(itemRepository.save(oldItem));
     }
 
 
     @Override
     public List<ItemInputDto> searchItem(String text, Integer from, Integer size) {
+        int page = from < size ? 0 : from / size;
+
         if (text.isBlank()) {
             return List.of();
         }
 
-        List<Item> items = itemRepository.searchItem(text, PageRequest.of(from / size, size));
+        List<Item> items = itemRepository.searchItem(text, PageRequest.of(page, size));
 
         return items.stream()
-                    .map(itemMapper::toInputDto)
+                    .map(ItemMapper::toInputDto)
                     .collect(Collectors.toList());
     }
 
@@ -130,11 +130,11 @@ public class ItemServiceImpl implements ItemService {
                                                );
                                            });
 
-        Comment comment = commentMapper.toComment(commentDto, booking.getItem(), booking.getBooker());
+        Comment comment = CommentMapper.toComment(commentDto, booking.getItem(), booking.getBooker());
         comment.setCreated(LocalDateTime.now());
         commentRepository.save(comment);
 
-        return commentMapper.toCommentDto(comment);
+        return CommentMapper.toCommentDto(comment);
     }
 
     private ItemOutputDto getItemOutputDto(Item item, Long ownerId) {
@@ -143,27 +143,27 @@ public class ItemServiceImpl implements ItemService {
         Booking nextBooking = bookingRepository.findNextBooking(item.getId(), ownerId)
                                                .orElse(null);
 
-        ItemOutputDto itemOutputDto = itemMapper.toOutputDto(item);
+        ItemOutputDto itemOutputDto = ItemMapper.toOutputDto(item);
 
-        BookingItemOutputDto lastBookingItemOutputDto;
-        BookingItemOutputDto nextBookingItemOutputDto;
+        BookingForItemOutputDto lastBookingForItemOutputDto;
+        BookingForItemOutputDto nextBookingForItemOutputDto;
 
         if (lastBooking != null) {
-            lastBookingItemOutputDto = new BookingItemOutputDto(lastBooking.getId(),
+            lastBookingForItemOutputDto = new BookingForItemOutputDto(lastBooking.getId(),
                     lastBooking.getBooker()
                                .getId());
-            itemOutputDto.setLastBooking(lastBookingItemOutputDto);
+            itemOutputDto.setLastBooking(lastBookingForItemOutputDto);
         }
         if (nextBooking != null) {
-            nextBookingItemOutputDto = new BookingItemOutputDto(nextBooking.getId(),
+            nextBookingForItemOutputDto = new BookingForItemOutputDto(nextBooking.getId(),
                     nextBooking.getBooker()
                                .getId());
-            itemOutputDto.setNextBooking(nextBookingItemOutputDto);
+            itemOutputDto.setNextBooking(nextBookingForItemOutputDto);
         }
 
         List<Comment> comments = commentRepository.findByItemId(item.getId());
         List<CommentDto> commentsDto = comments.stream()
-                                               .map(commentMapper::toCommentDto)
+                                               .map(CommentMapper::toCommentDto)
                                                .collect(Collectors.toList());
         itemOutputDto.setComments(commentsDto);
 

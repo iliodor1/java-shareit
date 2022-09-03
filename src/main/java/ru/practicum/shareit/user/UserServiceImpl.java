@@ -15,19 +15,18 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private final UserMapper userMapper;
 
     @Override
     public UserDto create(UserDto userDto) {
-        User user = userMapper.toUser(userDto);
+        User user = UserMapper.toUser(userDto);
 
-        return userMapper.toDto(userRepository.save(user));
+        return UserMapper.toDto(userRepository.save(user));
     }
 
     @Override
     public UserDto update(Long id, UserDto userDto) {
-        User newUser = userMapper.toUser(userDto);
-        User oldUser = userMapper.toUser(getUser(id));
+        User newUser = UserMapper.toUser(userDto);
+        User oldUser = UserMapper.toUser(getUser(id));
 
         if (newUser.getEmail() != null) {
             oldUser.setEmail(newUser.getEmail());
@@ -36,7 +35,7 @@ public class UserServiceImpl implements UserService {
             oldUser.setName(newUser.getName());
         }
 
-        return userMapper.toDto(userRepository.save(oldUser));
+        return UserMapper.toDto(userRepository.save(oldUser));
     }
 
     @Override
@@ -48,13 +47,12 @@ public class UserServiceImpl implements UserService {
                                               "User with id " + id + " not found!"
                                       );
                                   });
-        return userMapper.toDto(user);
+        return UserMapper.toDto(user);
     }
 
     @Override
     public void delete(Long id) {
-        User user = userMapper.toUser(getUser(id));
-        userRepository.delete(user);
+        userRepository.deleteById(id);
     }
 
     @Override
@@ -62,7 +60,7 @@ public class UserServiceImpl implements UserService {
         List<User> users = userRepository.findAll();
 
         return users.stream()
-                    .map(userMapper::toDto)
+                    .map(UserMapper::toDto)
                     .collect(Collectors.toList());
     }
 

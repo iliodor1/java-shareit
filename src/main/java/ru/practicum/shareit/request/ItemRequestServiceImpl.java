@@ -26,10 +26,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ItemRequestServiceImpl implements ItemRequestService {
     private final ItemRequestRepository itemRequestRepository;
-    private final ItemRequestMapper itemRequestMapper;
-    private final ItemMapper itemMapper;
     private final UserService userService;
-    private final UserMapper userMapper;
     private final ItemRepository itemRepository;
 
     @Override
@@ -45,44 +42,47 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                                          );
                                      });
 
-        return itemRequestMapper.toDto(itemRequest, getItemsByRequestId(requestId));
+        return ItemRequestMapper.toDto(itemRequest, getItemsByRequestId(requestId));
     }
 
     @Override
     public ItemRequestDto create(Long requesterId, ItemRequestDto itemRequestDto) {
         itemRequestDto.setCreated(LocalDateTime.now());
-        User requester = userMapper.toUser(userService.getUser(requesterId));
+        User requester = UserMapper.toUser(userService.getUser(requesterId));
 
         ItemRequest itemRequest = itemRequestRepository.save(
-                itemRequestMapper.toItem(itemRequestDto, requester)
+                ItemRequestMapper.toItem(itemRequestDto, requester)
         );
 
-        return itemRequestMapper.toDto(itemRequest, getItemsByRequestId(itemRequest.getId()));
+        return ItemRequestMapper.toDto(itemRequest, getItemsByRequestId(itemRequest.getId()));
     }
 
     @Override
     public List<ItemRequestDto> getOwnRequests(Long requesterId) {
-        userMapper.toUser(userService.getUser(requesterId));
+        UserMapper.toUser(userService.getUser(requesterId));
 
         return itemRequestRepository.findAllByRequesterIdOrderByCreated(requesterId)
                                     .stream()
-                                    .map(r -> itemRequestMapper.toDto(r, getItemsByRequestId(r.getId())))
+                                    .map(r -> ItemRequestMapper.toDto(r, getItemsByRequestId(r.getId())))
                                     .collect(Collectors.toList());
     }
 
     @Override
     public List<ItemRequestDto> getAllRequests(Long userId, Integer from, Integer size) {
-        userMapper.toUser(userService.getUser(userId));
+        UserMapper.toUser(userService.getUser(userId));
 
-        Page<ItemRequest> requests = itemRequestRepository
-                .findAll(PageRequest.of(from / size, size, Sort.by("created")
-                                                               .descending()));
+        int page = from < size ? 0 : from / size;
+
+        Page<ItemRequest> requests =
+                itemRequestRepository.findAll(
+                        PageRequest.of(page, size, Sort.by("created").descending())
+                );
 
         return requests.stream()
                        .filter(r -> !(r.getRequester()
                                        .getId()
                                        .equals(userId)))
-                       .map(r -> itemRequestMapper.toDto(r, getItemsByRequestId(r.getId())))
+                       .map(r -> ItemRequestMapper.toDto(r, getItemsByRequestId(r.getId())))
                        .collect(Collectors.toList());
     }
 
@@ -93,7 +93,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                     .filter(i -> i.getRequest()
                                   .getId()
                                   .equals(requestId))
-                    .map(itemMapper::toOutputDto)
+                    .map(ItemMapper::toOutputDto)
                     .collect(Collectors.toList());
     }
 
