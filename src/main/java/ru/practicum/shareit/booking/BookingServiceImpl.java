@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.dto.BookingStatusDto;
+import ru.practicum.shareit.booking.dto.BookingWithStatusDto;
 import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
@@ -28,18 +28,20 @@ public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
-    private final BookingMapper bookingMapper;
     private final ItemRepository itemRepository;
 
     @Override
-    public BookingStatusDto getById(Long userId, Long bookingId) {
+    public BookingWithStatusDto getById(Long userId, Long bookingId) {
         Booking booking = findBookingById(bookingId);
 
-        Long bookerId = booking.getBooker().getId();
-        Long ownerId = booking.getItem().getOwner().getId();
+        Long bookerId = booking.getBooker()
+                               .getId();
+        Long ownerId = booking.getItem()
+                              .getOwner()
+                              .getId();
 
         if (bookerId.equals(userId) || ownerId.equals(userId)) {
-            return bookingMapper.toBookingDto(booking);
+            return BookingMapper.toBookingDto(booking);
         } else {
             log.error("Only the item owner or the booker can getById the booking");
             throw new NotFoundException("Only the item owner or the booker can getById the booking");
@@ -47,7 +49,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingStatusDto create(Long bookerId, BookingDto bookingDto) {
+    public BookingWithStatusDto create(Long bookerId, BookingDto bookingDto) {
         User booker = userRepository.findById(bookerId)
                                     .orElseThrow(() -> {
                                         log.error("User with id " + bookerId + " not found!");
@@ -75,17 +77,18 @@ public class BookingServiceImpl implements BookingService {
                 .equals(false)) {
             throw new BadRequestException("The item is not available!");
         }
-        Booking booking = bookingMapper.toBooking(bookingDto, booker, item, BookingStatus.WAITING);
+        Booking booking = BookingMapper.toBooking(bookingDto, booker, item, BookingStatus.WAITING);
 
-        return bookingMapper.toBookingDto(bookingRepository.save(booking));
+        return BookingMapper.toBookingDto(bookingRepository.save(booking));
     }
 
     @Override
-    public BookingStatusDto approve(Long ownerId, Long bookingId, boolean approved) {
+    public BookingWithStatusDto approve(Long ownerId, Long bookingId, boolean approved) {
         Booking booking = findBookingById(bookingId);
-        if (booking.getStatus().equals(BookingStatus.APPROVED)) {
+        if (booking.getStatus()
+                   .equals(BookingStatus.APPROVED)) {
             log.error("Booking status can't change after approve");
-            throw new BadRequestException("Booking status can't change after approve");
+            throw new BadRequestException("Booking status can't change after approval");
         }
 
         Long itemOwnerId = booking.getItem()
@@ -93,8 +96,8 @@ public class BookingServiceImpl implements BookingService {
                                   .getId();
 
         if (!itemOwnerId.equals(ownerId)) {
-            log.error("User with id {} tries to approve not own item", itemOwnerId);
-            throw new NotFoundException("Item has not been added user id " + itemOwnerId);
+            log.error("User with id {} tries to approve not own item", ownerId);
+            throw new NotFoundException("Item has not been added user id " + ownerId);
         }
 
         if (approved) {
@@ -103,17 +106,19 @@ public class BookingServiceImpl implements BookingService {
             booking.setStatus(BookingStatus.REJECTED);
         }
 
-        return bookingMapper.toBookingDto(bookingRepository.save(booking));
+        return BookingMapper.toBookingDto(bookingRepository.save(booking));
     }
 
     @Override
-    public List<BookingStatusDto> getByBookerId(Long bookerId,
-                                                BookingState bookingState,
-                                                Integer from,
-                                                Integer size) {
+    public List<BookingWithStatusDto> getByBookerId(Long bookerId,
+                                                    BookingState bookingState,
+                                                    Integer from,
+                                                    Integer size) {
         List<Booking> bookings = List.of();
 
-        Pageable pageable = PageRequest.of(from/size, size, Sort.by("start").descending());
+        int page = from < size ? 0 : from / size;
+        Pageable pageable = PageRequest.of(page, size, Sort.by("start")
+                                                           .descending());
 
         switch (bookingState) {
             case ALL:
@@ -151,22 +156,24 @@ public class BookingServiceImpl implements BookingService {
         }
 
         return bookings.stream()
-                       .map(bookingMapper::toBookingDto)
+                       .map(BookingMapper::toBookingDto)
                        .collect(Collectors.toList());
     }
 
     @Override
-    public List<BookingStatusDto> getByOwnerId(Long ownerId,
-                                               BookingState bookingState,
-                                               Integer from,
-                                               Integer size) {
+    public List<BookingWithStatusDto> getByOwnerId(Long ownerId,
+                                                   BookingState bookingState,
+                                                   Integer from,
+                                                   Integer size) {
         List<Booking> bookings = List.of();
 
-        Pageable pageable = PageRequest.of(from/size, size, Sort.by("start").descending());
+        int page = from < size ? 0 : from / size;
+        Pageable pageable = PageRequest.of(page, size, Sort.by("start")
+                                                                  .descending());
 
         switch (bookingState) {
             case ALL:
-                bookings = bookingRepository.findAllByOwner(ownerId,pageable)
+                bookings = bookingRepository.findAllByOwner(ownerId, pageable)
                                             .toList();
                 if (bookings.isEmpty()) {
                     log.error("No bookings for owner with id {}", ownerId);
@@ -196,7 +203,7 @@ public class BookingServiceImpl implements BookingService {
         }
 
         return bookings.stream()
-                       .map(bookingMapper::toBookingDto)
+                       .map(BookingMapper::toBookingDto)
                        .collect(Collectors.toList());
     }
 

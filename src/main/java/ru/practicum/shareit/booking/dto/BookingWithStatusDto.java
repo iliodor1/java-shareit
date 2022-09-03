@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class BookingStatusDto {
+public class BookingWithStatusDto {
     Long id;
     @Future
     LocalDateTime start;
