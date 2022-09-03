@@ -2,6 +2,7 @@ package ru.practicum.shareit.user.dto;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.SuperBuilder;
 import ru.practicum.shareit.validator.Marker.*;
 import ru.practicum.shareit.validator.NullOrNotBlank;
 
@@ -9,6 +10,8 @@ import javax.validation.constraints.*;
 
 @Data
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@Builder
+@RequiredArgsConstructor
 public class UserDto {
     Long id;
 
