@@ -1,12 +1,16 @@
 package ru.practicum.shareit.user.dto;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.SuperBuilder;
-import ru.practicum.shareit.validator.Marker.*;
+import ru.practicum.shareit.validator.Marker.OnCreate;
+import ru.practicum.shareit.validator.Marker.OnUpdate;
 import ru.practicum.shareit.validator.NullOrNotBlank;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 
 @Data
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)

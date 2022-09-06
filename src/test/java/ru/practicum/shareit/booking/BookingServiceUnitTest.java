@@ -120,8 +120,10 @@ class BookingServiceUnitTest {
         BookingWithStatusDto bookingWithStatusDto = bookingService.create(1L, bookingDto);
 
         assertEquals(1L, bookingWithStatusDto.getId());
-        assertEquals("user1", bookingWithStatusDto.getBooker().getName());
-        assertEquals("Item1", bookingWithStatusDto.getItem().getName());
+        assertEquals("user1", bookingWithStatusDto.getBooker()
+                                                  .getName());
+        assertEquals("Item1", bookingWithStatusDto.getItem()
+                                                  .getName());
     }
 
     @Test
@@ -297,7 +299,7 @@ class BookingServiceUnitTest {
         when(bookingRepository.findAllByOwner(anyLong(), any()))
                 .thenReturn(new PageImpl<>(bookings));
 
-       bookingService.getByOwnerId(4L, BookingState.ALL, 0, 20);
+        bookingService.getByOwnerId(4L, BookingState.ALL, 0, 20);
 
         verify(bookingRepository, times(1)).findAllByOwner(anyLong(), any());
     }
@@ -309,7 +311,7 @@ class BookingServiceUnitTest {
         when(bookingRepository.findAllByOwner(anyLong(), any()))
                 .thenReturn(new PageImpl<>(bookings));
 
-        NotFoundException exception = assertThrows(NotFoundException.class, ()->
+        NotFoundException exception = assertThrows(NotFoundException.class, () ->
                 bookingService.getByOwnerId(4L, BookingState.ALL, 0, 20));
 
         assertEquals("No bookings for owner with id 4", exception.getMessage());
@@ -360,7 +362,8 @@ class BookingServiceUnitTest {
 
         when(bookingRepository.findAllByOwnerIdAndStatus(4L,
                 BookingStatus.WAITING,
-                PageRequest.of(0, 20, Sort.by("start").descending())))
+                PageRequest.of(0, 20, Sort.by("start")
+                                          .descending())))
                 .thenReturn(new PageImpl<>(bookings));
 
         bookingService.getByOwnerId(4L, BookingState.WAITING, 0, 20);
@@ -368,7 +371,8 @@ class BookingServiceUnitTest {
         verify(bookingRepository, times(1))
                 .findAllByOwnerIdAndStatus(4L,
                         BookingStatus.WAITING,
-                        PageRequest.of(0, 20, Sort.by("start").descending()));
+                        PageRequest.of(0, 20, Sort.by("start")
+                                                  .descending()));
     }
 
     @Test
@@ -377,7 +381,8 @@ class BookingServiceUnitTest {
 
         when(bookingRepository.findAllByOwnerIdAndStatus(4L,
                 BookingStatus.REJECTED,
-                PageRequest.of(0, 20, Sort.by("start").descending())))
+                PageRequest.of(0, 20, Sort.by("start")
+                                          .descending())))
                 .thenReturn(new PageImpl<>(bookings));
 
         bookingService.getByOwnerId(4L, BookingState.REJECTED, 0, 20);
@@ -385,7 +390,8 @@ class BookingServiceUnitTest {
         verify(bookingRepository, times(1))
                 .findAllByOwnerIdAndStatus(4L,
                         BookingStatus.REJECTED,
-                        PageRequest.of(0, 20, Sort.by("start").descending()));
+                        PageRequest.of(0, 20, Sort.by("start")
+                                                  .descending()));
     }
 
     @Test
@@ -407,7 +413,7 @@ class BookingServiceUnitTest {
         when(bookingRepository.findAllByBooker(anyLong(), any()))
                 .thenReturn(new PageImpl<>(bookings));
 
-        NotFoundException exception = assertThrows(NotFoundException.class, ()->
+        NotFoundException exception = assertThrows(NotFoundException.class, () ->
                 bookingService.getByBookerId(4L, BookingState.ALL, 0, 20));
 
         assertEquals("No bookings for booker with id 4", exception.getMessage());
@@ -458,7 +464,8 @@ class BookingServiceUnitTest {
 
         when(bookingRepository.findAllByBookerIdAndStatus(4L,
                 BookingStatus.WAITING,
-                PageRequest.of(0, 20, Sort.by("start").descending())))
+                PageRequest.of(0, 20, Sort.by("start")
+                                          .descending())))
                 .thenReturn(new PageImpl<>(bookings));
 
         bookingService.getByBookerId(4L, BookingState.WAITING, 0, 20);
@@ -466,7 +473,8 @@ class BookingServiceUnitTest {
         verify(bookingRepository, times(1))
                 .findAllByBookerIdAndStatus(4L,
                         BookingStatus.WAITING,
-                        PageRequest.of(0, 20, Sort.by("start").descending()));
+                        PageRequest.of(0, 20, Sort.by("start")
+                                                  .descending()));
     }
 
     @Test
@@ -475,7 +483,8 @@ class BookingServiceUnitTest {
 
         when(bookingRepository.findAllByBookerIdAndStatus(4L,
                 BookingStatus.REJECTED,
-                PageRequest.of(0, 20, Sort.by("start").descending())))
+                PageRequest.of(0, 20, Sort.by("start")
+                                          .descending())))
                 .thenReturn(new PageImpl<>(bookings));
 
         bookingService.getByBookerId(4L, BookingState.REJECTED, 0, 20);
@@ -483,7 +492,8 @@ class BookingServiceUnitTest {
         verify(bookingRepository, times(1))
                 .findAllByBookerIdAndStatus(4L,
                         BookingStatus.REJECTED,
-                        PageRequest.of(0, 20, Sort.by("start").descending()));
+                        PageRequest.of(0, 20, Sort.by("start")
+                                                  .descending()));
     }
 
     private Booking createBooking(Long id, Item item, User booker) {
@@ -493,12 +503,12 @@ class BookingServiceUnitTest {
 
     private BookingDto createBookingDto() {
         return BookingDto.builder()
-                  .itemId(1L)
-                  .start(LocalDateTime.now()
-                                      .plusMinutes(10))
-                  .end(LocalDateTime.now()
-                                    .plusMinutes(20))
-                  .build();
+                         .itemId(1L)
+                         .start(LocalDateTime.now()
+                                             .plusMinutes(10))
+                         .end(LocalDateTime.now()
+                                           .plusMinutes(20))
+                         .build();
     }
 
     private Item createItem(Long id, User owner) {

@@ -28,65 +28,64 @@ class UserServiceUnitTest {
     @InjectMocks
     private UserServiceImpl userService;
 
-    private final UserDto USER_ID_1_DTO = new UserDto(1L, "User1", "user1@mail.ru");
-    private final User USER_ID_1 = new User(1L, "User1", "user1@mail.ru");
-    private final User USER_ID_2 = new User(2L, "User2", "user2@mail.ru");
-
+    private final UserDto user1Dto = new UserDto(1L, "User1", "user1@mail.ru");
+    private final User user1 = new User(1L, "User1", "user1@mail.ru");
+    private final User user2 = new User(2L, "User2", "user2@mail.ru");
 
     @Test
     public void whenCreate_thenCallUserRepository() {
         Mockito.when(userRepository.save(any()))
-               .thenReturn(USER_ID_1);
+               .thenReturn(user1);
 
-        userService.create(USER_ID_1_DTO);
+        userService.create(user1Dto);
 
         verify(userRepository, times(1)).save(any());
     }
 
     @Test
     public void whenUpdateUser_thenCallUserRepository() {
-        UserDto InputUserDto = new UserDto(null, "UpdateUser1", null);
-        User UpdatedUser = new User(1L, "UpdateUser1", "user1@mail.ru");
+        UserDto inputUserDto = new UserDto(null, "UpdateUser1", null);
+        User updatedUser = new User(1L, "UpdateUser1", "user1@mail.ru");
 
         Mockito.when(userRepository.save(any()))
-               .thenReturn(UpdatedUser);
+               .thenReturn(updatedUser);
 
         Mockito.when(userRepository.findById(anyLong()))
-               .thenReturn(Optional.of(USER_ID_1));
+               .thenReturn(Optional.of(user1));
 
-        userService.update(1L, InputUserDto);
+        userService.update(1L, inputUserDto);
 
         verify(userRepository, times(1)).save(any());
     }
 
     @Test
     public void whenUpdateUserName_thenReturnUpdatedUserWithUpdatedName() {
-        UserDto InputUserDto = new UserDto(null, "UpdateUser1", null);
-        User UpdatedUser = new User(1L, "UpdateUser1", "user1@mail.ru");
+        UserDto inputUserDto = new UserDto(null, "UpdateUser1", null);
+        User updatedUser = new User(1L, "UpdateUser1", "user1@mail.ru");
 
         Mockito.when(userRepository.save(any()))
-               .thenReturn(UpdatedUser);
+               .thenReturn(updatedUser);
 
         Mockito.when(userRepository.findById(anyLong()))
-               .thenReturn(Optional.of(USER_ID_1));
+               .thenReturn(Optional.of(user1));
 
-        UserDto userDto = userService.update(anyLong(), InputUserDto);
+        UserDto userDto = userService.update(anyLong(), inputUserDto);
 
         assertEquals("UpdateUser1", userDto.getName());
     }
 
     @Test
     public void whenUpdateEmail_thenReturnUpdatedUserWithUpdatedEmail() {
-        UserDto InputUserDto = new UserDto(null, null, "userUpdated1@mail.ru");
-        User UpdatedUser = new User(1L, "User1", "userUpdated1@mail.ru");
+        UserDto inputUserDto = new UserDto(null, null, "userUpdated1@mail.ru");
+        User updatedUser = new User(1L, "User1", "userUpdated1@mail.ru");
 
         Mockito.when(userRepository.save(any()))
-               .thenReturn(UpdatedUser);
+               .thenReturn(updatedUser);
 
         Mockito.when(userRepository.findById(anyLong()))
-               .thenReturn(Optional.of(USER_ID_1));
+               .thenReturn(Optional.of(user1));
 
-        UserDto userDto = userService.update(anyLong(), InputUserDto);
+        UserDto userDto = userService.update(anyLong(), inputUserDto);
 
         assertEquals("userUpdated1@mail.ru", userDto.getEmail());
     }
@@ -94,7 +93,7 @@ class UserServiceUnitTest {
     @Test
     public void whenGetUserByIdExist_thenCallUserRepository() {
         Mockito.when(userRepository.findById(anyLong()))
-               .thenReturn(Optional.of(USER_ID_1));
+               .thenReturn(Optional.of(user1));
 
         userService.getUser(anyLong());
 
@@ -105,11 +104,11 @@ class UserServiceUnitTest {
     @Test
     public void whenGetUserByIdExist_thenReturnUserDto() {
         Mockito.when(userRepository.findById(anyLong()))
-               .thenReturn(Optional.of(USER_ID_1));
+               .thenReturn(Optional.of(user1));
 
         UserDto userOutputDto = userService.getUser(anyLong());
 
-        assertEquals(USER_ID_1_DTO, userOutputDto);
+        assertEquals(user1Dto, userOutputDto);
     }
 
     @Test
@@ -134,7 +133,7 @@ class UserServiceUnitTest {
     @Test
     public void whenGetAllUsers_thenCallUserRepository() {
         Mockito.when(userRepository.findAll())
-               .thenReturn(List.of(USER_ID_1, USER_ID_2));
+               .thenReturn(List.of(user1, user2));
 
         userService.getAll();
 
@@ -145,7 +144,7 @@ class UserServiceUnitTest {
     @Test
     public void whenGetAllUsers_thenReturnUsersList() {
         Mockito.when(userRepository.findAll())
-               .thenReturn(List.of(USER_ID_1, USER_ID_2));
+               .thenReturn(List.of(user1, user2));
 
         List<UserDto> users = userService.getAll();
 

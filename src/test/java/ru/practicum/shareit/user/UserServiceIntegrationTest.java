@@ -79,7 +79,7 @@ class UserServiceIntegrationTest {
         );
 
         User user = query.setParameter("id", userDto.getId())
-                                            .getSingleResult();
+                         .getSingleResult();
 
         assertThat(user.getId(), notNullValue());
         assertThat(user.getId(), equalTo(userDto.getId()));
@@ -115,7 +115,7 @@ class UserServiceIntegrationTest {
 
         assertThat(targetUsers, hasSize(usersDto.size()));
         for (UserDto userDto : usersDto) {
-            assertThat(targetUsers, hasItem( allOf(
+            assertThat(targetUsers, hasItem(allOf(
                     hasProperty("id", notNullValue()),
                     hasProperty("name", equalTo(userDto.getName())),
                     hasProperty("email", equalTo(userDto.getEmail()))
