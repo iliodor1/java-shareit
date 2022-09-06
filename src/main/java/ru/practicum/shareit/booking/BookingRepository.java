@@ -1,14 +1,12 @@
 package ru.practicum.shareit.booking;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
@@ -18,7 +16,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "where b.item.id = ?1 " +
             "and b.item.owner.id = ?2 " +
             "and b.end < current_timestamp " +
-            "order by b.end desc")
+            "order by b.end desc ")
     Optional<Booking> findLastBooking(Long itemId, Long ownerId);
 
     @Query("select b " +

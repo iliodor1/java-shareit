@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemInputDto;
 import ru.practicum.shareit.item.dto.ItemOutputDto;
-import ru.practicum.shareit.validator.Marker.*;
+import ru.practicum.shareit.validator.Marker.OnCreate;
+import ru.practicum.shareit.validator.Marker.OnUpdate;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.List;

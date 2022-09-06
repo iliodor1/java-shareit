@@ -45,7 +45,7 @@ public class BookingController {
     @GetMapping
     public List<BookingWithStatusDto> getByBookerId(@RequestHeader("X-Sharer-User-Id") Long bookerId,
                                                     @RequestParam(required = false,
-                                                        defaultValue = "ALL") String state,
+                                                            defaultValue = "ALL") String state,
                                                     @RequestParam(required = false, defaultValue = "0")
                                                     @PositiveOrZero Integer from,
                                                     @RequestParam(required = false, defaultValue = "20")
@@ -56,7 +56,7 @@ public class BookingController {
     @GetMapping("owner")
     public List<BookingWithStatusDto> getByOwnerId(@RequestHeader("X-Sharer-User-Id") Long ownerId,
                                                    @RequestParam(required = false,
-                                                       defaultValue = "ALL") String state,
+                                                           defaultValue = "ALL") String state,
                                                    @RequestParam(required = false, defaultValue = "0")
                                                    @PositiveOrZero Integer from,
                                                    @RequestParam(required = false, defaultValue = "20")
