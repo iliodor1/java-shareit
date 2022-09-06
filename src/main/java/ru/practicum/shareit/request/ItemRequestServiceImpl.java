@@ -75,7 +75,8 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
         Page<ItemRequest> requests =
                 itemRequestRepository.findAll(
-                        PageRequest.of(page, size, Sort.by("created").descending())
+                        PageRequest.of(page, size, Sort.by("created")
+                                                       .descending())
                 );
 
         return requests.stream()

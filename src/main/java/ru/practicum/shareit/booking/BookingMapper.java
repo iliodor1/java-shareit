@@ -36,7 +36,14 @@ public class BookingMapper {
                                    .build();
         Item item = booking.getItem();
 
-        return new BookingWithStatusDto(id, start, end, bookingStatus, bookerDto, ItemMapper.toInputDto(item));
+        return BookingWithStatusDto.builder()
+                                   .id(id)
+                                   .start(start)
+                                   .end(end)
+                                   .status(bookingStatus)
+                                   .booker(bookerDto)
+                                   .item(ItemMapper.toInputDto(item))
+                                   .build();
     }
 
 }

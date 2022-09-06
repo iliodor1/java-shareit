@@ -17,11 +17,13 @@ public class CommentMapper {
     }
 
     public static CommentDto toCommentDto(Comment comment) {
-        return new CommentDto(comment.getId(),
-                comment.getText(),
-                comment.getAuthor()
-                       .getName(),
-                comment.getCreated());
+        return CommentDto.builder()
+                         .id(comment.getId())
+                         .text(comment.getText())
+                         .authorName(comment.getAuthor()
+                                            .getName())
+                         .created(comment.getCreated())
+                         .build();
     }
 
 }
