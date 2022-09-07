@@ -74,15 +74,12 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         int page = from < size ? 0 : from / size;
 
         Page<ItemRequest> requests =
-                itemRequestRepository.findAll(
-                        PageRequest.of(page, size, Sort.by("created")
-                                                       .descending())
+                itemRequestRepository.findAllWithoutUserRequests(
+                        userId,
+                        PageRequest.of(page, size, Sort.by("created").descending())
                 );
 
         return requests.stream()
-                       .filter(r -> !(r.getRequester()
-                                       .getId()
-                                       .equals(userId)))
                        .map(r -> ItemRequestMapper.toDto(r, getItemsByRequestId(r.getId())))
                        .collect(Collectors.toList());
     }
@@ -91,9 +88,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         List<Item> items = itemRepository.findAllItemsByRequestId(requestId);
 
         return items.stream()
-                    .filter(i -> i.getRequest()
-                                  .getId()
-                                  .equals(requestId))
                     .map(ItemMapper::toOutputDto)
                     .collect(Collectors.toList());
     }

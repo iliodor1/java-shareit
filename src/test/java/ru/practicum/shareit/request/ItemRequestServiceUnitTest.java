@@ -141,16 +141,22 @@ class ItemRequestServiceUnitTest {
 
         when(userService.getUser(anyLong())).thenReturn(createUserDto(4L));
 
-        when(itemRequestRepository.findAll(
-                PageRequest.of(0, 20, Sort.by("created")
-                                          .descending()))
+        when(itemRequestRepository.findAllWithoutUserRequests(
+                        4L,
+                        PageRequest.of(0, 20, Sort.by("created")
+                                                  .descending())
+                )
         )
                 .thenReturn(new PageImpl<>(List.of(itemRequest1, itemRequest2, itemRequest3)));
 
         List<ItemRequestDto> itemRequestsDto = itemRequestService.getAllRequests(4L, 0, 20);
 
         verify(itemRequestRepository, times(1))
-                .findAll(PageRequest.of(0, 20, Sort.by("created").descending()));
+                .findAllWithoutUserRequests(
+                        4L,
+                        PageRequest.of(0, 20, Sort.by("created")
+                                                   .descending())
+                );
         assertEquals(3, itemRequestsDto.size());
     }
 
