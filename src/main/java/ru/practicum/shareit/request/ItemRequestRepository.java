@@ -9,9 +9,12 @@ import ru.practicum.shareit.request.model.ItemRequest;
 import java.util.List;
 
 public interface ItemRequestRepository extends JpaRepository<ItemRequest, Long> {
-    List<ItemRequest> findAllByRequesterIdOrderByCreated(Long requesterId);
 
-    @Query("select i from ItemRequest i where i.requester.id <> ?1")
-    Page<ItemRequest> findAllWithoutUserRequests(Long userId, Pageable pageable);
+  List<ItemRequest> findAllByRequesterIdOrderByCreated(Long requesterId);
+
+  @Query("SELECT i\n"
+      + "FROM ItemRequest i\n"
+      + "WHERE i.requester.id <> ?1")
+  Page<ItemRequest> findAllWithoutUserRequests(Long userId, Pageable pageable);
 
 }
