@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exeption.NotFoundException;
 import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.ItemRepository;
-import ru.practicum.shareit.item.dto.ItemOutputDto;
+import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.model.ItemRequest;
@@ -84,7 +84,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                        .collect(Collectors.toList());
     }
 
-    private List<ItemOutputDto> getItemsByRequestId(Long requestId) {
+    private List<ItemResponseDto> getItemsByRequestId(Long requestId) {
         List<Item> items = itemRepository.findAllItemsByRequestId(requestId);
 
         return items.stream()

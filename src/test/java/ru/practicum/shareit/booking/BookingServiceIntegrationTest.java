@@ -5,8 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.dto.BookingWithStatusDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.booking.model.BookingStatus;
@@ -46,7 +46,7 @@ class BookingServiceIntegrationTest {
         Booking booking = createBooking(item, booker);
         entityManager.persist(booking);
 
-        BookingWithStatusDto receivedBooking = service.getById(owner.getId(), booking.getId());
+        BookingDto receivedBooking = service.getById(owner.getId(), booking.getId());
 
         assertThat(receivedBooking.getId(), notNullValue());
         assertThat(booking.getId(), equalTo(receivedBooking.getId()));
@@ -67,14 +67,14 @@ class BookingServiceIntegrationTest {
         Item item = createItem(1L, owner);
         entityManager.persist(item);
 
-        BookingDto bookingDto = createBookingDto(item.getId());
+        BookingRequestDto bookingRequestDto = createBookingDto(item.getId());
 
-        BookingWithStatusDto createdBooking = service.create(booker.getId(), bookingDto);
+        BookingDto createdBooking = service.create(booker.getId(), bookingRequestDto);
 
         assertThat(createdBooking.getId(), notNullValue());
-        assertThat(bookingDto.getItemId(), equalTo(createdBooking.getItem().getId()));
-        assertThat(bookingDto.getStart(), equalTo(createdBooking.getStart()));
-        assertThat(bookingDto.getEnd(), equalTo(createdBooking.getEnd()));
+        assertThat(bookingRequestDto.getItemId(), equalTo(createdBooking.getItem().getId()));
+        assertThat(bookingRequestDto.getStart(), equalTo(createdBooking.getStart()));
+        assertThat(bookingRequestDto.getEnd(), equalTo(createdBooking.getEnd()));
         assertThat(booker.getId(), equalTo(createdBooking.getBooker().getId()));
     }
 
@@ -91,7 +91,7 @@ class BookingServiceIntegrationTest {
         Booking booking = createBooking(item, booker);
         entityManager.persist(booking);
 
-        BookingWithStatusDto approvedBooking
+        BookingDto approvedBooking
                 = service.approve(owner.getId(), booking.getId(), true);
 
         assertThat(approvedBooking.getId(), notNullValue());
@@ -119,7 +119,7 @@ class BookingServiceIntegrationTest {
         );
         bookings.forEach(entityManager::persist);
 
-        List<BookingWithStatusDto> bookerItems
+        List<BookingDto> bookerItems
                 = service.getByBookerId(bookers.get(0).getId(), BookingState.ALL, 0, 20);
 
         assertThat(bookerItems, hasSize(bookings.size() - 1));
@@ -150,7 +150,7 @@ class BookingServiceIntegrationTest {
         );
         bookings.forEach(entityManager::persist);
 
-        List<BookingWithStatusDto> ownItems
+        List<BookingDto> ownItems
                 = service.getByOwnerId(owners.get(0).getId(), BookingState.ALL, 0, 20);
 
         assertThat(ownItems, hasSize(bookings.size() - 1));
@@ -169,8 +169,8 @@ class BookingServiceIntegrationTest {
         );
     }
 
-    private BookingDto createBookingDto(Long itemId) {
-        return BookingDto.builder()
+    private BookingRequestDto createBookingDto(Long itemId) {
+        return BookingRequestDto.builder()
                          .itemId(itemId)
                          .start(LocalDateTime.now()
                                              .plusMinutes(10))

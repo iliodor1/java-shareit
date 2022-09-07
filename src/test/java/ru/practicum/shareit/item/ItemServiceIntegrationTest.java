@@ -8,8 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.item.dto.CommentDto;
-import ru.practicum.shareit.item.dto.ItemInputDto;
-import ru.practicum.shareit.item.dto.ItemOutputDto;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
@@ -40,7 +40,7 @@ class ItemServiceIntegrationTest {
         entityManager.persist(owner);
         entityManager.persist(item);
 
-        ItemOutputDto createdItem = service.getItem(item.getId(), owner.getId());
+        ItemResponseDto createdItem = service.getItem(item.getId(), owner.getId());
 
         assertThat(createdItem.getId(), notNullValue());
         assertThat(item.getName(), equalTo(createdItem.getName()));
@@ -61,7 +61,7 @@ class ItemServiceIntegrationTest {
 
         items.forEach(entityManager::persist);
 
-        List<ItemOutputDto> ownItems = service.getOwnItems(owner.getId(), 0, 20);
+        List<ItemResponseDto> ownItems = service.getOwnItems(owner.getId(), 0, 20);
 
         assertThat(items, hasSize(ownItems.size()));
 
@@ -79,14 +79,14 @@ class ItemServiceIntegrationTest {
         User owner = createUser(1L);
         entityManager.persist(owner);
 
-        ItemInputDto itemInputDto = createItemInputDto(1L);
+        ItemDto itemDto = createItemInputDto(1L);
 
-        ItemInputDto createdItem = service.create(owner.getId(), itemInputDto);
+        ItemDto createdItem = service.create(owner.getId(), itemDto);
 
         assertThat(createdItem.getId(), notNullValue());
-        assertThat(itemInputDto.getName(), equalTo(createdItem.getName()));
-        assertThat(itemInputDto.getDescription(), equalTo(createdItem.getDescription()));
-        assertThat(itemInputDto.getAvailable(), equalTo(createdItem.getAvailable()));
+        assertThat(itemDto.getName(), equalTo(createdItem.getName()));
+        assertThat(itemDto.getDescription(), equalTo(createdItem.getDescription()));
+        assertThat(itemDto.getAvailable(), equalTo(createdItem.getAvailable()));
     }
 
     @Test
@@ -95,19 +95,19 @@ class ItemServiceIntegrationTest {
         Item item = createItem(1L, owner);
         entityManager.persist(owner);
         entityManager.persist(item);
-        ItemInputDto itemInputDto = ItemInputDto.builder()
+        ItemDto itemDto = ItemDto.builder()
                                                 .available(false)
                                                 .description("updatedDescription")
                                                 .build();
 
-        ItemInputDto updatedItem
-                = service.update(owner.getId(), item.getId(), itemInputDto);
+        ItemDto updatedItem
+                = service.update(owner.getId(), item.getId(), itemDto);
 
         assertThat(updatedItem.getId(), notNullValue());
         assertThat(item.getId(), equalTo(updatedItem.getId()));
         assertThat(item.getName(), equalTo(updatedItem.getName()));
-        assertThat(itemInputDto.getDescription(), equalTo(updatedItem.getDescription()));
-        assertThat(itemInputDto.getAvailable(), equalTo(updatedItem.getAvailable()));
+        assertThat(itemDto.getDescription(), equalTo(updatedItem.getDescription()));
+        assertThat(itemDto.getAvailable(), equalTo(updatedItem.getAvailable()));
     }
 
     @Test
@@ -125,7 +125,7 @@ class ItemServiceIntegrationTest {
         List<Item> items = List.of(item1, item2, item3);
         items.forEach(entityManager::persist);
 
-        List<ItemInputDto> foundItems = service.searchItem("search", 0, 20);
+        List<ItemDto> foundItems = service.searchItem("search", 0, 20);
 
         assertThat(foundItems, hasSize(items.size() - 1));
     }
@@ -166,8 +166,8 @@ class ItemServiceIntegrationTest {
         return new Item(null, "item" + id, "description" + id, true, owner);
     }
 
-    private ItemInputDto createItemInputDto(Long id) {
-        return ItemInputDto.builder()
+    private ItemDto createItemInputDto(Long id) {
+        return ItemDto.builder()
                            .name("item" + id)
                            .description("description" + id)
                            .available(true)

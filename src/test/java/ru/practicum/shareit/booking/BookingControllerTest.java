@@ -7,8 +7,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.dto.BookingWithStatusDto;
 import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -37,23 +37,23 @@ class BookingControllerTest {
     @Autowired
     private MockMvc mvc;
 
-    private final BookingDto bookingDto = BookingDto.builder()
+    private final BookingRequestDto bookingRequestDto = BookingRequestDto.builder()
                                                     .id(1L)
                                                     .itemId(10L)
                                                     .build();
 
-    private final BookingWithStatusDto bookingStatusDto
-            = BookingWithStatusDto.builder()
+    private final BookingDto bookingStatusDto
+            = BookingDto.builder()
                                   .id(1L)
                                   .status(BookingStatus.WAITING)
                                   .build();
 
     @Test
     void whenCreateBooking_thenReturnBookingStatus2xx() throws Exception {
-        when(service.create(1L, bookingDto)).thenReturn(bookingStatusDto);
+        when(service.create(1L, bookingRequestDto)).thenReturn(bookingStatusDto);
 
         mvc.perform(post("/bookings")
-                   .content(mapper.writeValueAsString(bookingDto))
+                   .content(mapper.writeValueAsString(bookingRequestDto))
                    .header("X-Sharer-User-Id", 1L)
                    .characterEncoding(StandardCharsets.UTF_8)
                    .contentType(MediaType.APPLICATION_JSON)
@@ -66,7 +66,7 @@ class BookingControllerTest {
 
     @Test
     void whenCreateBookingPastStart_thenReturnStatus4xx() throws Exception {
-        BookingDto bookingPastStartDto = BookingDto.builder()
+        BookingRequestDto bookingPastStartDto = BookingRequestDto.builder()
                                                    .id(1L)
                                                    .itemId(10L)
                                                    .start(LocalDateTime.now()
@@ -86,7 +86,7 @@ class BookingControllerTest {
 
     @Test
     void whenCreateBookingPastEnd_thenReturnStatus4xx() throws Exception {
-        BookingDto bookingPastStartDto = BookingDto.builder()
+        BookingRequestDto bookingPastStartDto = BookingRequestDto.builder()
                                                    .id(1L)
                                                    .itemId(10L)
                                                    .end(LocalDateTime.now()
@@ -106,8 +106,8 @@ class BookingControllerTest {
 
     @Test
     void whenApproveBooking_thenReturnApprovedBookingStatus2xx() throws Exception {
-        BookingWithStatusDto approvedBookingDto
-                = BookingWithStatusDto.builder()
+        BookingDto approvedBookingDto
+                = BookingDto.builder()
                                       .id(1L)
                                       .status(BookingStatus.APPROVED)
                                       .build();
@@ -137,12 +137,12 @@ class BookingControllerTest {
 
     @Test
     void whenGetByBookerId_thenReturnListOfBookingsStatus2xx() throws Exception {
-        List<BookingWithStatusDto> bookingsStatusDto = new ArrayList<>();
+        List<BookingDto> bookingsStatusDto = new ArrayList<>();
 
         UserDto booker = createUserDto(1L);
 
         for (int i = 1; i < 4; i++) {
-            BookingWithStatusDto booking = BookingWithStatusDto.builder()
+            BookingDto booking = BookingDto.builder()
                                                                .id((long) i)
                                                                .booker(booker)
                                                                .status(BookingStatus.WAITING)
@@ -165,12 +165,12 @@ class BookingControllerTest {
 
     @Test
     void whenGetByOwnerId_thenReturnListOfBookingsStatus2xx() throws Exception {
-        List<BookingWithStatusDto> bookingsStatusDto = new ArrayList<>();
+        List<BookingDto> bookingsStatusDto = new ArrayList<>();
 
         for (int i = 1; i < 4; i++) {
             UserDto booker = createUserDto(i);
 
-            BookingWithStatusDto booking = BookingWithStatusDto.builder()
+            BookingDto booking = BookingDto.builder()
                                                                .id((long) i)
                                                                .booker(booker)
                                                                .status(BookingStatus.WAITING)

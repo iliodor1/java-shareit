@@ -12,8 +12,8 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.exeption.NotFoundException;
 import ru.practicum.shareit.item.dto.CommentDto;
-import ru.practicum.shareit.item.dto.ItemInputDto;
-import ru.practicum.shareit.item.dto.ItemOutputDto;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserService;
@@ -59,9 +59,9 @@ class ItemServiceUnitTest {
                 .thenReturn(List.of());
 
 
-        ItemOutputDto itemOutputDto = itemService.getItem(1L, anyLong());
+        ItemResponseDto itemResponseDto = itemService.getItem(1L, anyLong());
 
-        assertEquals(1L, itemOutputDto.getId());
+        assertEquals(1L, itemResponseDto.getId());
     }
 
     @Test
@@ -98,7 +98,7 @@ class ItemServiceUnitTest {
         when(itemRepository.findAllByOwnerIdOrderById(1L, PageRequest.of(0, 20)))
                 .thenReturn(new PageImpl<>(List.of(createItem(1L), createItem(2L))));
 
-        List<ItemOutputDto> items = itemService.getOwnItems(1L, 0, 20);
+        List<ItemResponseDto> items = itemService.getOwnItems(1L, 0, 20);
 
         assertEquals(2, items.size());
     }
@@ -120,9 +120,9 @@ class ItemServiceUnitTest {
                 .thenReturn(new UserDto(1L, "name", "email@mail.ru"));
         when(itemRepository.save(any())).thenReturn(createItem(1L));
 
-        ItemInputDto itemInputDto = itemService.create(anyLong(), createItemInputDto(1L));
+        ItemDto itemDto = itemService.create(anyLong(), createItemInputDto(1L));
 
-        assertEquals(1L, itemInputDto.getId());
+        assertEquals(1L, itemDto.getId());
     }
 
     @Test
@@ -139,7 +139,7 @@ class ItemServiceUnitTest {
                         true,
                         null));
 
-        itemService.update(1L, 1L, new ItemInputDto(null,
+        itemService.update(1L, 1L, new ItemDto(null,
                 "UpdatedItem",
                 null,
                 true,
@@ -162,10 +162,10 @@ class ItemServiceUnitTest {
                         true,
                         null));
 
-        ItemInputDto itemInputDto = itemService.update(
+        ItemDto itemDto = itemService.update(
                 1L,
                 1L,
-                new ItemInputDto(
+                new ItemDto(
                         null,
                         "UpdatedItem",
                         null,
@@ -174,9 +174,9 @@ class ItemServiceUnitTest {
                 )
         );
 
-        assertEquals("UpdatedItem", itemInputDto.getName());
-        assertEquals(1L, itemInputDto.getId());
-        assertEquals("Description1", itemInputDto.getDescription());
+        assertEquals("UpdatedItem", itemDto.getName());
+        assertEquals(1L, itemDto.getId());
+        assertEquals("Description1", itemDto.getDescription());
     }
 
     @Test
@@ -193,11 +193,11 @@ class ItemServiceUnitTest {
                         null,
                         null));
 
-        ItemInputDto itemInputDto =
+        ItemDto itemDto =
                 itemService.update(
                         1L,
                         1L,
-                        new ItemInputDto(null,
+                        new ItemDto(null,
                                 null,
                                 "UpdatedDescription",
                                 null,
@@ -205,9 +205,9 @@ class ItemServiceUnitTest {
                         )
                 );
 
-        assertEquals("UpdatedDescription", itemInputDto.getDescription());
-        assertEquals("Item1", itemInputDto.getName());
-        assertEquals(1L, itemInputDto.getId());
+        assertEquals("UpdatedDescription", itemDto.getDescription());
+        assertEquals("Item1", itemDto.getName());
+        assertEquals(1L, itemDto.getId());
     }
 
     @Test
@@ -224,10 +224,10 @@ class ItemServiceUnitTest {
                         false,
                         null));
 
-        ItemInputDto itemInputDto = itemService.update(
+        ItemDto itemDto = itemService.update(
                 1L,
                 1L,
-                new ItemInputDto(
+                new ItemDto(
                         null,
                         null,
                         null,
@@ -236,10 +236,10 @@ class ItemServiceUnitTest {
                 )
         );
 
-        assertFalse(itemInputDto.getAvailable());
-        assertEquals("Item1", itemInputDto.getName());
-        assertEquals(1L, itemInputDto.getId());
-        assertEquals("Description1", itemInputDto.getDescription());
+        assertFalse(itemDto.getAvailable());
+        assertEquals("Item1", itemDto.getName());
+        assertEquals(1L, itemDto.getId());
+        assertEquals("Description1", itemDto.getDescription());
     }
 
     @Test
@@ -262,7 +262,7 @@ class ItemServiceUnitTest {
         when(itemRepository.searchItem("Item", PageRequest.of(0, 20)))
                 .thenReturn(new PageImpl<>(items).toList());
 
-        List<ItemInputDto> itemsInputDto = itemService.searchItem("Item", 0, 20);
+        List<ItemDto> itemsInputDto = itemService.searchItem("Item", 0, 20);
 
         assertEquals(3, itemsInputDto.size());
     }
@@ -349,8 +349,8 @@ class ItemServiceUnitTest {
         );
     }
 
-    private ItemInputDto createItemInputDto(Long id) {
-        return new ItemInputDto(
+    private ItemDto createItemInputDto(Long id) {
+        return new ItemDto(
                 id,
                 "Item" + id,
                 "Description" + id,

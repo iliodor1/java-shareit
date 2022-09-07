@@ -8,8 +8,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.item.dto.CommentDto;
-import ru.practicum.shareit.item.dto.ItemInputDto;
-import ru.practicum.shareit.item.dto.ItemOutputDto;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemResponseDto;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -34,14 +34,14 @@ class ItemControllerTest {
     @Autowired
     private MockMvc mvc;
 
-    private final ItemInputDto itemInputDto = ItemInputDto.builder()
+    private final ItemDto itemDto = ItemDto.builder()
                                                           .id(1L)
                                                           .name("item")
                                                           .description("description")
                                                           .available(true)
                                                           .build();
 
-    private final ItemOutputDto itemOutputDto = ItemOutputDto.builder()
+    private final ItemResponseDto itemResponseDto = ItemResponseDto.builder()
                                                              .id(1L)
                                                              .name("item")
                                                              .description("description")
@@ -50,23 +50,23 @@ class ItemControllerTest {
 
     @Test
     void whenGetItemExist_thenReturnItemStatus2xx() throws Exception {
-        when(service.getItem(1L, itemInputDto.getId())).thenReturn(itemOutputDto);
+        when(service.getItem(1L, itemDto.getId())).thenReturn(itemResponseDto);
 
-        mvc.perform(get("/items/" + itemInputDto.getId())
+        mvc.perform(get("/items/" + itemDto.getId())
                    .header("X-Sharer-User-Id", 1L))
            .andExpect(status().isOk())
-           .andExpect(jsonPath("$.id", is(itemOutputDto.getId()), Long.class))
-           .andExpect(jsonPath("$.name", is(itemOutputDto.getName())))
-           .andExpect(jsonPath("$.description", is(itemOutputDto.getDescription())))
-           .andExpect(jsonPath("$.available", is(itemOutputDto.getAvailable())));
+           .andExpect(jsonPath("$.id", is(itemResponseDto.getId()), Long.class))
+           .andExpect(jsonPath("$.name", is(itemResponseDto.getName())))
+           .andExpect(jsonPath("$.description", is(itemResponseDto.getDescription())))
+           .andExpect(jsonPath("$.available", is(itemResponseDto.getAvailable())));
     }
 
     @Test
     void whenGetOwnItems_thenReturnLiatOfOwnItemsStatus2xx() throws Exception {
-        List<ItemOutputDto> itemsDto = new ArrayList<>();
+        List<ItemResponseDto> itemsDto = new ArrayList<>();
 
         for (int i = 1; i < 4; i++) {
-            ItemOutputDto item = ItemOutputDto.builder()
+            ItemResponseDto item = ItemResponseDto.builder()
                                               .id((long) i)
                                               .name("item" + i)
                                               .description("description")
@@ -87,37 +87,37 @@ class ItemControllerTest {
 
     @Test
     void whenCreateItem_thenReturnItemStatus200() throws Exception {
-        when(service.create(1L, itemInputDto)).thenReturn(itemInputDto);
+        when(service.create(1L, itemDto)).thenReturn(itemDto);
 
         mvc.perform(post("/items")
-                   .content(mapper.writeValueAsString(itemInputDto))
+                   .content(mapper.writeValueAsString(itemDto))
                    .header("X-Sharer-User-Id", 1L)
                    .characterEncoding(StandardCharsets.UTF_8)
                    .contentType(MediaType.APPLICATION_JSON)
                    .accept(MediaType.APPLICATION_JSON))
            .andExpect(status().isOk())
-           .andExpect(jsonPath("$.id", is(itemInputDto.getId()), Long.class))
-           .andExpect(jsonPath("$.name", is(itemInputDto.getName())))
-           .andExpect(jsonPath("$.description", is(itemInputDto.getDescription())))
-           .andExpect(jsonPath("$.available", is(itemInputDto.getAvailable())));
+           .andExpect(jsonPath("$.id", is(itemDto.getId()), Long.class))
+           .andExpect(jsonPath("$.name", is(itemDto.getName())))
+           .andExpect(jsonPath("$.description", is(itemDto.getDescription())))
+           .andExpect(jsonPath("$.available", is(itemDto.getAvailable())));
     }
 
     @Test
     void whenUpdateItem_thenReturnUpdatedItemStatus200() throws Exception {
-        ItemInputDto newItemName = ItemInputDto.builder()
+        ItemDto newItemName = ItemDto.builder()
                                                .name("newName")
                                                .build();
 
-        ItemInputDto updatedItem = ItemInputDto.builder()
-                                               .id(itemInputDto.getId())
+        ItemDto updatedItem = ItemDto.builder()
+                                               .id(itemDto.getId())
                                                .name(newItemName.getName())
-                                               .description(itemInputDto.getDescription())
-                                               .available(itemInputDto.getAvailable())
+                                               .description(itemDto.getDescription())
+                                               .available(itemDto.getAvailable())
                                                .build();
 
-        when(service.update(1L, itemInputDto.getId(), newItemName)).thenReturn(updatedItem);
+        when(service.update(1L, itemDto.getId(), newItemName)).thenReturn(updatedItem);
 
-        mvc.perform(patch("/items/" + itemInputDto.getId())
+        mvc.perform(patch("/items/" + itemDto.getId())
                    .content(mapper.writeValueAsString(newItemName))
                    .header("X-Sharer-User-Id", 1L)
                    .characterEncoding(StandardCharsets.UTF_8)
@@ -132,7 +132,7 @@ class ItemControllerTest {
 
     @Test
     void whenSearchItem_thenReturnListOfItemsStatus2xx() throws Exception {
-        List<ItemInputDto> itemsDto = createItemsInputDto();
+        List<ItemDto> itemsDto = createItemsInputDto();
 
         when(service.searchItem(anyString(), anyInt(), anyInt())).thenReturn(itemsDto);
 
@@ -146,7 +146,7 @@ class ItemControllerTest {
 
     @Test
     void whenSearchItemWithoutFromAndSize_thenReturnListOfItemsWithDefaultFromAndSize() throws Exception {
-        List<ItemInputDto> itemsDto = createItemsInputDto();
+        List<ItemDto> itemsDto = createItemsInputDto();
 
         when(service.searchItem(anyString(), anyInt(), anyInt())).thenReturn(itemsDto);
 
@@ -160,7 +160,7 @@ class ItemControllerTest {
 
     @Test
     void whenSearchItemNegativeFromOrSizeParam_thenReturnStatus4xx() throws Exception {
-        List<ItemInputDto> itemsDto = createItemsInputDto();
+        List<ItemDto> itemsDto = createItemsInputDto();
 
         when(service.searchItem(anyString(), anyInt(), anyInt())).thenReturn(itemsDto);
 
@@ -181,7 +181,7 @@ class ItemControllerTest {
 
         when(service.createComment(anyLong(), anyLong(), any())).thenReturn(commentDto);
 
-        mvc.perform(post("/items/" + itemInputDto.getId() + "/comment")
+        mvc.perform(post("/items/" + itemDto.getId() + "/comment")
                    .content(mapper.writeValueAsString(commentDto))
                    .header("X-Sharer-User-Id", 1L)
                    .characterEncoding(StandardCharsets.UTF_8)
@@ -193,10 +193,10 @@ class ItemControllerTest {
            .andExpect(jsonPath("$.authorName", is(commentDto.getAuthorName())));
     }
 
-    private List<ItemInputDto> createItemsInputDto() {
-        List<ItemInputDto> itemsDto = new ArrayList<>();
+    private List<ItemDto> createItemsInputDto() {
+        List<ItemDto> itemsDto = new ArrayList<>();
         for (int i = 1; i < 4; i++) {
-            ItemInputDto item = ItemInputDto.builder()
+            ItemDto item = ItemDto.builder()
                                             .id((long) i)
                                             .name("item" + i)
                                             .description("description")

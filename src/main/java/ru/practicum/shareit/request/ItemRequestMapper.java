@@ -1,7 +1,7 @@
 package ru.practicum.shareit.request;
 
 import lombok.AllArgsConstructor;
-import ru.practicum.shareit.item.dto.ItemOutputDto;
+import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ItemRequestMapper {
 
-    public static ItemRequestDto toDto(ItemRequest itemRequest, List<ItemOutputDto> items) {
+    public static ItemRequestDto toDto(ItemRequest itemRequest, List<ItemResponseDto> items) {
         Long id = itemRequest.getId();
         String description = itemRequest.getDescription();
         LocalDateTime created = itemRequest.getCreated();
