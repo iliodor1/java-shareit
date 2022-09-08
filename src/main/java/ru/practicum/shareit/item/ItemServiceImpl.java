@@ -2,15 +2,18 @@ package ru.practicum.shareit.item;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.BookingRepository;
-import ru.practicum.shareit.booking.dto.BookingItemOutputDto;
+import ru.practicum.shareit.booking.dto.BookingItemResponseDto;
 import ru.practicum.shareit.exeption.BadRequestException;
 import ru.practicum.shareit.exeption.NotFoundException;
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.ItemRequestRepository;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.UserMapper;
@@ -18,6 +21,7 @@ import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,13 +31,11 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final BookingRepository bookingRepository;
     private final UserService userService;
-    private final ItemMapper itemMapper;
-    private final UserMapper userMapper;
-    private final CommentMapper commentMapper;
+    private final ItemRequestRepository itemRequestRepository;
     private final CommentRepository commentRepository;
 
     @Override
-    public ItemOutputDto getItem(Long itemId, Long ownerId) {
+    public ItemResponseDto getItem(Long itemId, Long ownerId) {
         Item item = itemRepository.findById(itemId)
                                   .orElseThrow(() -> {
                                       log.error("Item with id {} not found", itemId);
@@ -44,8 +46,12 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemOutputDto> getOwnItems(Long ownerId) {
-        List<Item> items = itemRepository.findAllByOwnerIdOrderById(ownerId);
+    public List<ItemResponseDto> getOwnItems(Long ownerId, Integer from, Integer size) {
+        int page = from < size ? 0 : from / size;
+
+        List<Item> items = itemRepository.findAllByOwnerIdOrderById(ownerId,
+                                                 PageRequest.of(page, size))
+                                         .toList();
 
         return items.stream()
                     .map(i -> getItemOutputDto(i, ownerId))
@@ -53,17 +59,21 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemInputDto create(Long ownerId, ItemInputDto itemInputDto) {
+    public ItemDto create(Long ownerId, ItemDto itemDto) {
         UserDto ownerDto = userService.getUser(ownerId);
-        User owner = userMapper.toUser(ownerDto);
+        User owner = UserMapper.toUser(ownerDto);
+        Optional<ItemRequest> itemRequest = itemDto.getRequestId() == null ? Optional.empty() :
+                itemRequestRepository.findById(itemDto.getRequestId());
 
-        Item item = itemMapper.toItem(itemInputDto, owner);
+        Item item = ItemMapper.toItem(itemDto, owner);
 
-        return itemMapper.toInputDto(itemRepository.save(item));
+        itemRequest.ifPresent(item::setRequest);
+
+        return ItemMapper.toInputDto(itemRepository.save(item));
     }
 
     @Override
-    public ItemInputDto update(Long ownerId, Long itemId, ItemInputDto itemInputDto) {
+    public ItemDto update(Long ownerId, Long itemId, ItemDto itemDto) {
         Item oldItem = itemRepository.findByIdAndOwnerId(itemId, ownerId)
                                      .orElseThrow(() -> {
                                          log.error("Item with id {} not found or user isn't owner", itemId);
@@ -72,7 +82,7 @@ public class ItemServiceImpl implements ItemService {
                                          );
                                      });
 
-        Item newItem = itemMapper.toItem(itemInputDto, null);
+        Item newItem = ItemMapper.toItem(itemDto, null);
 
         String name = newItem.getName();
         String description = newItem.getDescription();
@@ -88,20 +98,21 @@ public class ItemServiceImpl implements ItemService {
             oldItem.setAvailable(available);
         }
 
-        return itemMapper.toInputDto(itemRepository.save(oldItem));
+        return ItemMapper.toInputDto(itemRepository.save(oldItem));
     }
 
-
     @Override
-    public List<ItemInputDto> searchItem(String text) {
+    public List<ItemDto> searchItem(String text, Integer from, Integer size) {
+        int page = from < size ? 0 : from / size;
+
         if (text.isBlank()) {
             return List.of();
         }
 
-        List<Item> items = itemRepository.searchItem(text);
+        List<Item> items = itemRepository.searchItem(text, PageRequest.of(page, size));
 
         return items.stream()
-                    .map(itemMapper::toInputDto)
+                    .map(ItemMapper::toInputDto)
                     .collect(Collectors.toList());
     }
 
@@ -118,43 +129,44 @@ public class ItemServiceImpl implements ItemService {
                                                );
                                            });
 
-        Comment comment = commentMapper.toComment(commentDto, booking.getItem(), booking.getBooker());
+        Comment comment = CommentMapper.toComment(commentDto, booking.getItem(), booking.getBooker());
         comment.setCreated(LocalDateTime.now());
         commentRepository.save(comment);
 
-        return commentMapper.toCommentDto(comment);
+        return CommentMapper.toCommentDto(comment);
     }
 
-    private ItemOutputDto getItemOutputDto(Item item, Long ownerId) {
+    private ItemResponseDto getItemOutputDto(Item item, Long ownerId) {
         Booking lastBooking = bookingRepository.findLastBooking(item.getId(), ownerId)
                                                .orElse(null);
         Booking nextBooking = bookingRepository.findNextBooking(item.getId(), ownerId)
                                                .orElse(null);
 
-        ItemOutputDto itemOutputDto = itemMapper.toOutputDto(item);
+        ItemResponseDto itemResponseDto = ItemMapper.toOutputDto(item);
 
-        BookingItemOutputDto lastBookingItemOutputDto;
-        BookingItemOutputDto nextBookingItemOutputDto;
+        BookingItemResponseDto lastBookingItemResponseDto;
+        BookingItemResponseDto nextBookingItemResponseDto;
 
         if (lastBooking != null) {
-            lastBookingItemOutputDto = new BookingItemOutputDto(lastBooking.getId(),
-                    lastBooking.getBooker().getId());
-            itemOutputDto.setLastBooking(lastBookingItemOutputDto);
+            lastBookingItemResponseDto = new BookingItemResponseDto(lastBooking.getId(),
+                    lastBooking.getBooker()
+                               .getId());
+            itemResponseDto.setLastBooking(lastBookingItemResponseDto);
         }
         if (nextBooking != null) {
-            nextBookingItemOutputDto = new BookingItemOutputDto(nextBooking.getId(),
+            nextBookingItemResponseDto = new BookingItemResponseDto(nextBooking.getId(),
                     nextBooking.getBooker()
                                .getId());
-            itemOutputDto.setNextBooking(nextBookingItemOutputDto);
+            itemResponseDto.setNextBooking(nextBookingItemResponseDto);
         }
 
         List<Comment> comments = commentRepository.findByItemId(item.getId());
         List<CommentDto> commentsDto = comments.stream()
-                                               .map(commentMapper::toCommentDto)
+                                               .map(CommentMapper::toCommentDto)
                                                .collect(Collectors.toList());
-        itemOutputDto.setComments(commentsDto);
+        itemResponseDto.setComments(commentsDto);
 
-        return itemOutputDto;
+        return itemResponseDto;
     }
 
 }

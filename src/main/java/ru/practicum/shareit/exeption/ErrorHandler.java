@@ -31,12 +31,6 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleConflictRequestException(ConflictRequestException e) {
-        return new ErrorResponse(ERROR, e.getMessage());
-    }
-
-    @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleFilmNotFoundException(NotFoundException e) {
         return new ErrorResponse(ERROR, e.getMessage());

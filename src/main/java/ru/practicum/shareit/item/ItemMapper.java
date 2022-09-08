@@ -1,41 +1,42 @@
 package ru.practicum.shareit.item;
 
 import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Component;
-import ru.practicum.shareit.item.dto.ItemInputDto;
-import ru.practicum.shareit.item.dto.ItemOutputDto;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
-@Component
 @AllArgsConstructor
 public class ItemMapper {
 
-    public ItemInputDto toInputDto(Item item) {
+    public static ItemDto toInputDto(Item item) {
         Long id = item.getId();
         String name = item.getName();
         String description = item.getDescription();
         Boolean available = item.getAvailable();
+        Long requestId = item.getRequest() == null ? null : item.getRequest()
+                                                                .getId();
 
-        return new ItemInputDto(id, name, description, available);
+        return new ItemDto(id, name, description, available, requestId);
     }
 
-    public ItemOutputDto toOutputDto(Item item) {
-        ItemOutputDto itemOutputDto = new ItemOutputDto();
+    public static ItemResponseDto toOutputDto(Item item) {
+        Long requestId = item.getRequest() == null ? null : item.getRequest().getId();
 
-        itemOutputDto.setId(item.getId());
-        itemOutputDto.setName(item.getName());
-        itemOutputDto.setDescription(item.getDescription());
-        itemOutputDto.setAvailable(item.getAvailable());
-
-        return itemOutputDto;
+        return ItemResponseDto.builder()
+                              .id(item.getId())
+                              .name(item.getName())
+                              .description(item.getDescription())
+                              .available(item.getAvailable())
+                              .requestId(requestId)
+                              .build();
     }
 
-    public Item toItem(ItemInputDto itemInputDto, User owner) {
-        Long id = itemInputDto.getId();
-        String name = itemInputDto.getName();
-        String description = itemInputDto.getDescription();
-        Boolean available = itemInputDto.getAvailable();
+    public static Item toItem(ItemDto itemDto, User owner) {
+        Long id = itemDto.getId();
+        String name = itemDto.getName();
+        String description = itemDto.getDescription();
+        Boolean available = itemDto.getAvailable();
 
         return new Item(id, name, description, available, owner);
     }

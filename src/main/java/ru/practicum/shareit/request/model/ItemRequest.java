@@ -1,7 +1,6 @@
 package ru.practicum.shareit.request.model;
 
-import lombok.AccessLevel;
-import lombok.Data;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.user.model.User;
 
@@ -9,6 +8,8 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "item_requests")
@@ -27,5 +28,11 @@ public class ItemRequest {
 
     @Column(name = "created", nullable = false)
     LocalDateTime created;
+
+    public ItemRequest(String description, User requester, LocalDateTime created) {
+        this.description = description;
+        this.requester = requester;
+        this.created = created;
+    }
 
 }
