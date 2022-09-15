@@ -74,7 +74,7 @@ public class ItemController {
     public ResponseEntity<Object> createComment(
             @RequestHeader("X-Sharer-User-Id") Long bookerId,
             @PathVariable Long itemId,
-            @RequestBody CommentDto commentDto
+            @Valid @RequestBody CommentDto commentDto
     ) {
         return itemClient.createComment(bookerId, itemId, commentDto);
     }

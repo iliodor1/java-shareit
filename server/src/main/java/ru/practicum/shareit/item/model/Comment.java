@@ -5,7 +5,6 @@ import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
-import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @Entity
@@ -20,7 +19,6 @@ public class Comment {
     @Column(name = "id", nullable = false)
     Long id;
 
-    @Size(min = 1)
     @Column(name = "text", nullable = false, length = 1000)
     String text;
 
