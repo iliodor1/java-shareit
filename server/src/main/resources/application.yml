@@ -1,0 +1,30 @@
+spring:
+  datasource:
+    username: ${POSTGRES_USER}
+    url: ${SPRING_DATASOURCE_URL}
+    driverClassName: org.postgresql.Driver
+    password: ${POSTGRES_PASSWORD}
+  sql:
+    init:
+      mode: always
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: 'true'
+    hibernate:
+      ddl-auto: none
+server:
+  port: '9090'
+
+...
+---
+spring:
+  config:
+    activate:
+      on-profile: ci,test
+  datasource:
+    username: test
+    url: jdbc:h2:mem:shareit
+    driverClassName: org.h2.Driver
+    password: test
